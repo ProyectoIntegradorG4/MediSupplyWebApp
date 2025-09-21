@@ -90,7 +90,7 @@ const Products = () => {
         </HStack>
       </Box>
 
-      <Box overflowX="auto">
+      <Box overflowX="auto" position="relative">
         <Table variant="simple">
           <Thead>
             <Tr>
@@ -102,15 +102,41 @@ const Products = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {filteredProducts.map((product) => (
-              <Tr key={product.sku}>
-                <Td>{product.sku}</Td>
-                <Td>{product.name}</Td>
-                <Td>{product.category}</Td>
-                <Td isNumeric>{product.stock}</Td>
-                <Td>{product.location}</Td>
+            {isLoading ? (
+              <Tr>
+                <Td colSpan={5}>
+                  <Center py={4}>
+                    <Spinner size="md" color="blue.500" />
+                  </Center>
+                </Td>
               </Tr>
-            ))}
+            ) : isError ? (
+              <Tr>
+                <Td colSpan={5}>
+                  <Center py={4}>
+                    <Text color="red.500">Error loading products. Please try again later.</Text>
+                  </Center>
+                </Td>
+              </Tr>
+            ) : filteredProducts.length === 0 ? (
+              <Tr>
+                <Td colSpan={5}>
+                  <Center py={4}>
+                    <Text color="gray.500">No products found</Text>
+                  </Center>
+                </Td>
+              </Tr>
+            ) : (
+              filteredProducts.map((product) => (
+                <Tr key={product.sku}>
+                  <Td>{product.sku}</Td>
+                  <Td>{product.name}</Td>
+                  <Td>{product.category}</Td>
+                  <Td isNumeric>{product.stock}</Td>
+                  <Td>{product.location}</Td>
+                </Tr>
+              ))
+            )}
           </Tbody>
         </Table>
       </Box>
