@@ -22,34 +22,23 @@ import {
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import FileUploadModal from '../components/FileUploadModal';
-
-interface Product {
-  sku: string;
-  name: string;
-  category: string;
-  stock: number;
-  location: string;
-}
-
-const initialProducts: Product[] = [
-  { sku: '123', name: 'Producto 1', category: 'Categoría', stock: 1, location: 'Bodega 1' },
-  { sku: '234', name: 'Producto 2', category: 'Categoría', stock: 1, location: 'Bodega 1' },
-  { sku: '345', name: 'Producto 3', category: 'Categoría', stock: 1, location: 'Bodega 1' },
-  { sku: '456', name: 'Producto 4', category: 'Categoría', stock: 1, location: 'Bodega 1' },
-  { sku: '567', name: 'Producto 5', category: 'Categoría', stock: 1, location: 'Bodega 1' },
-  { sku: '678', name: 'Producto 6', category: 'Categoría', stock: 1, location: 'Bodega 1' },
-  { sku: '789', name: 'Producto 7', category: 'Categoría', stock: 1, location: 'Bodega 1' },
-  { sku: '890', name: 'Producto 8', category: 'Categoría', stock: 1, location: 'Bodega 1' },
-];
+import { productsApi } from '../services/api';
+import { Product } from '../types/api';
+import { Spinner, Center } from '@chakra-ui/react';
 
 const Products = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [products] = useState<Product[]>(initialProducts);
   const [rowsPerPage, setRowsPerPage] = useState('10');
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
-  const filteredProducts = products.filter(product =>
+  const { data: products, isLoading, isError } = useQuery({
+    queryKey: ['products'],
+    queryFn: productsApi.getProducts,
+  });
+
+  const filteredProducts = (products || []).filter(product =>
     product.sku.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
