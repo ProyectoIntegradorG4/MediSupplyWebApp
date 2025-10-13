@@ -47,9 +47,8 @@ Este proyecto incluye pipelines automatizados de CI/CD usando GitHub Actions:
 
 ### Flujos de Trabajo
 
-1. **Pipeline CI/CD** - Pruebas automáticas, construcción y despliegue
-2. **Calidad de Código** - Verificación de tipos y construcción
-3. **Despliegue Manual** - Despliegue bajo demanda a diferentes entornos
+1. **Pipeline CI/CD** - Pruebas automáticas, construcción, verificación de calidad y despliegue
+2. **Despliegue Manual** - Despliegue bajo demanda a diferentes entornos
 
 ### Despliegue
 

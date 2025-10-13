@@ -14,13 +14,9 @@ Este proyecto está configurado para desplegarse automáticamente a GitHub Pages
 - Se ejecuta en pushes a las ramas `main` y `develop`
 - Se ejecuta en pull requests a `main`
 - Incluye verificación de tipos, construcción y despliegue a GitHub Pages
-
-### 2. Calidad de Código (`.github/workflows/code-quality.yml`)
-- Se ejecuta en pushes y pull requests
-- Realiza verificación de tipos y verificación de construcción
 - Asegura estándares de calidad de código
 
-### 3. Despliegue Manual (`.github/workflows/manual-deploy.yml`)
+### 2. Despliegue Manual (`.github/workflows/manual-deploy.yml`)
 - Activado manualmente mediante la interfaz de GitHub Actions
 - Permite despliegue a entornos de staging o producción
 - Soporta etiquetado de versiones
