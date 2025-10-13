@@ -1,0 +1,60 @@
+name: Despliegue Manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Entorno al cual desplegar'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+      version:
+        description: 'Versión a desplegar'
+        required: false
+        default: 'latest'
+        type: string
+
+jobs:
+  deploy:
+    name: Desplegar a ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout del código
+      uses: actions/checkout@v4
+      
+    - name: Configurar Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Instalar dependencias
+      run: npm ci
+      
+    - name: Construir aplicación
+      run: npm run build
+      
+    - name: Desplegar a GitHub Pages
+      if: inputs.environment == 'production'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist
+        
+    - name: Subir a staging
+      if: inputs.environment == 'staging'
+      uses: actions/upload-artifact@v4
+      with:
+        name: construccion-staging-${{ github.sha }}
+        path: dist/
+        retention-days: 30
+        
+    - name: Notificar despliegue
+      run: |
+        echo "¡Despliegue a ${{ inputs.environment }} completado exitosamente!"
+        echo "Versión: ${{ inputs.version }}"
+        echo "Commit: ${{ github.sha }}"

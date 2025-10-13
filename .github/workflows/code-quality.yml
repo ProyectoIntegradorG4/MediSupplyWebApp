@@ -1,0 +1,39 @@
+name: Calidad de Código
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-and-test:
+    name: Lint y Pruebas
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout del código
+      uses: actions/checkout@v4
+      
+    - name: Configurar Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Instalar dependencias
+      run: npm ci
+      
+    - name: Verificación de tipos
+      run: npx tsc --noEmit
+      
+    - name: Verificación de construcción
+      run: npm run build
+      
+    - name: Verificar artefactos de construcción
+      run: |
+        if [ ! -d "dist" ]; then
+          echo "La construcción falló - directorio dist no encontrado"
+          exit 1
+        fi
+        echo "Construcción exitosa - directorio dist encontrado"
