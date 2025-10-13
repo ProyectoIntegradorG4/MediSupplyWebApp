@@ -27,6 +27,9 @@ jobs:
     - name: Verificación de tipos
       run: npx tsc --noEmit
       
+    - name: Ejecutar pruebas con cobertura
+      run: npm run test:coverage
+      
     - name: Construir aplicación
       run: npm run build
       
@@ -36,6 +39,13 @@ jobs:
         name: archivos-construccion
         path: dist/
         retention-days: 7
+        
+    - name: Subir reporte de cobertura
+      uses: actions/upload-artifact@v4
+      with:
+        name: reporte-cobertura
+        path: coverage/
+        retention-days: 30
 
   cd:
     name: Despliegue Continuo

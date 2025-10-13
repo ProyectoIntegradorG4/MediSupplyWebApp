@@ -40,6 +40,10 @@ Sistema de Gestión de Inventario de Suministros Médicos construido con React, 
 - `npm run type-check` - Ejecutar verificación de tipos de TypeScript
 - `npm run build:check` - Verificación de tipos y construcción
 - `npm run clean` - Limpiar artefactos de construcción
+- `npm run test` - Ejecutar pruebas en modo watch
+- `npm run test:run` - Ejecutar pruebas una vez
+- `npm run test:coverage` - Ejecutar pruebas con reporte de cobertura
+- `npm run test:ui` - Ejecutar pruebas con interfaz gráfica
 
 ## CI/CD
 
@@ -47,7 +51,7 @@ Este proyecto incluye pipelines automatizados de CI/CD usando GitHub Actions:
 
 ### Flujos de Trabajo
 
-1. **Pipeline CI/CD** - Pruebas automáticas, construcción, verificación de calidad y despliegue
+1. **Pipeline CI/CD** - Pruebas automáticas con cobertura, construcción, verificación de calidad y despliegue
 2. **Despliegue Manual** - Despliegue bajo demanda a diferentes entornos
 
 ### Despliegue
@@ -73,6 +77,8 @@ src/
 - **React 18** - Framework UI
 - **TypeScript** - Seguridad de tipos
 - **Vite** - Herramienta de construcción y servidor de desarrollo
+- **Vitest** - Framework de pruebas
+- **Testing Library** - Utilidades para pruebas de componentes
 - **Chakra UI** - Biblioteca de componentes
 - **React Query** - Obtención y caché de datos
 - **React Router** - Enrutamiento del lado del cliente
