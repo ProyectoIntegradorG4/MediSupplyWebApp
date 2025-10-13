@@ -7,7 +7,7 @@ import axios from 'axios'
 
 // Mock de axios
 vi.mock('axios')
-const mockedAxios = vi.mocked(axios)
+const mockedAxios = vi.mocked(axios, true)
 
 const ChakraWrapper = ({ children }: { children: React.ReactNode }) => (
   <ChakraProvider theme={theme}>{children}</ChakraProvider>
