@@ -194,12 +194,13 @@ jobs:
         
         echo "Actualizando imagen a: $IMAGE_URI"
         
-        # Actualizar la definición de tarea con la nueva imagen
-        jq --arg IMAGE "$IMAGE_URI" \
-          '.containerDefinitions[0].image = $IMAGE' \
-          task-definition.json > updated-task-definition.json
+        # Limpiar la definición de tarea removiendo campos no permitidos para registro
+        jq --arg IMAGE "$IMAGE_URI" '
+          del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy) |
+          .containerDefinitions[0].image = $IMAGE
+        ' task-definition.json > updated-task-definition.json
           
-        echo "✅ Definición de tarea actualizada"
+        echo "✅ Definición de tarea actualizada y limpiada"
           
     - name: Registrar nueva definición de tarea
       run: |
