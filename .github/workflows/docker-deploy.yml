@@ -87,8 +87,7 @@ jobs:
       with:
         images: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}
         tags: |
-          type=raw,value=${{ steps.version.outputs.version }}
-          type=raw,value=latest,enable={{is_default_branch}}
+          type=raw,value=latest
           
     - name: Construir y subir imagen Docker
       id: build
@@ -133,20 +132,10 @@ jobs:
         RELEASE_VERSION=$(node -p "require('./package.json').version")
         echo "Creating release: $RELEASE_VERSION"
         
-        # Create release using GitHub CLI
+        # Create release using GitHub CLI with simple notes
         gh release create "$RELEASE_VERSION" \
           --title "Release $RELEASE_VERSION" \
-          --notes "## Release $RELEASE_VERSION
-
-### Docker Image
-- **Tag**: latest
-- **Digest**: ${{ needs.build-docker-image.outputs.image-digest }}
-
-### Despliegue Automático
-Este release se desplegará automáticamente a producción.
-
-### Para Rollback Manual
-Si necesitas desplegar una versión anterior, usa el workflow de despliegue manual."
+          --notes "Release $RELEASE_VERSION - Docker image tagged as latest"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
