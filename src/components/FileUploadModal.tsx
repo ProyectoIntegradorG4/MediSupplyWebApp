@@ -60,7 +60,7 @@ const FileUploadModal = ({ isOpen, onClose }: FileUploadModalProps) => {
 
     setIsUploading(true);
     try {
-      const response = await axios.post('http://localhost:8000/upload-csv', formData, {
+      await axios.post('http://localhost:8000/upload-csv', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
