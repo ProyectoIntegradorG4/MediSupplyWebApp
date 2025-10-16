@@ -79,7 +79,11 @@ jobs:
       id: version
       run: |
         # Obtener versión desde package.json
+        echo "Checking package.json..."
+        cat package.json | grep version
         VERSION=$(node -p "require('./package.json').version")
+        echo "Raw VERSION: '$VERSION'"
+        echo "VERSION length: ${#VERSION}"
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "Package version: $VERSION"
       
@@ -162,8 +166,9 @@ jobs:
         
     - name: Debug version output
       run: |
-        echo "Version from build-docker-image: '${{ needs.build-docker-image.outputs.version }}'"
-        echo "Version length: ${#{{ needs.build-docker-image.outputs.version }}}"
+        VERSION="${{ needs.build-docker-image.outputs.version }}"
+        echo "Version from build-docker-image: '$VERSION'"
+        echo "Version length: ${#VERSION}"
         
     - name: Verificar que la imagen existe en ECR
       run: |
