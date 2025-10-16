@@ -9,6 +9,9 @@ on:
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: medisupply-webapp
+  ECS_SERVICE: medisupply-service
+  ECS_CLUSTER: medisupply-cluster
+  ECS_TASK_DEFINITION: medisupply-task-definition
 
 jobs:
   build-and-test:
@@ -136,8 +139,110 @@ jobs:
           - **Tag**: ${{ needs.build-docker-image.outputs.image-tag }}
           - **Digest**: ${{ needs.build-docker-image.outputs.image-digest }}
           
-          ### Para desplegar
-          Usa el workflow de despliegue manual con el tag: `${{ needs.build-docker-image.outputs.version }}`
         draft: false
         prerelease: false
+
+  # Job de despliegue automático a AWS ECS
+  auto-deploy-to-aws:
+    name: Despliegue Automático a AWS ECS
+    runs-on: ubuntu-latest
+    needs: create-release-tag
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Checkout del código
+      uses: actions/checkout@v4
+      
+    - name: Configurar AWS CLI
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+        
+    - name: Verificar que la imagen existe en ECR
+      run: |
+        echo "Verificando imagen: ${{ needs.build-docker-image.outputs.version }}"
+        aws ecr describe-images \
+          --repository-name ${{ env.ECR_REPOSITORY }} \
+          --image-ids imageTag=${{ needs.build-docker-image.outputs.version }} \
+          --region ${{ env.AWS_REGION }}
+        echo "✅ Imagen encontrada en ECR"
+        
+    - name: Descargar definición de tarea actual
+      run: |
+        aws ecs describe-task-definition \
+          --task-definition ${{ env.ECS_TASK_DEFINITION }} \
+          --query taskDefinition > task-definition.json
+        echo "✅ Definición de tarea descargada"
+          
+    - name: Actualizar imagen en definición de tarea
+      run: |
+        # Construir la URI completa de la imagen
+        ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+        IMAGE_URI="$ACCOUNT_ID.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ needs.build-docker-image.outputs.version }}"
+        
+        echo "Actualizando imagen a: $IMAGE_URI"
+        
+        # Actualizar la definición de tarea con la nueva imagen
+        jq --arg IMAGE "$IMAGE_URI" \
+          '.containerDefinitions[0].image = $IMAGE' \
+          task-definition.json > updated-task-definition.json
+          
+        echo "✅ Definición de tarea actualizada"
+          
+    - name: Registrar nueva definición de tarea
+      run: |
+        NEW_TASK_DEF=$(aws ecs register-task-definition \
+          --cli-input-json file://updated-task-definition.json \
+          --query 'taskDefinition.taskDefinitionArn' \
+          --output text)
+        echo "NEW_TASK_DEF=$NEW_TASK_DEF" >> $GITHUB_ENV
+        echo "✅ Nueva definición de tarea registrada: $NEW_TASK_DEF"
+          
+    - name: Actualizar servicio ECS
+      run: |
+        aws ecs update-service \
+          --cluster ${{ env.ECS_CLUSTER }} \
+          --service ${{ env.ECS_SERVICE }} \
+          --task-definition $NEW_TASK_DEF
+        echo "✅ Servicio ECS actualizado"
+          
+    - name: Esperar estabilización del servicio
+      run: |
+        echo "Esperando estabilización del servicio..."
+        aws ecs wait services-stable \
+          --cluster ${{ env.ECS_CLUSTER }} \
+          --services ${{ env.ECS_SERVICE }}
+        echo "✅ Servicio estabilizado"
+          
+    - name: Verificar despliegue
+      run: |
+        # Obtener información del servicio
+        SERVICE_INFO=$(aws ecs describe-services \
+          --cluster ${{ env.ECS_CLUSTER }} \
+          --services ${{ env.ECS_SERVICE }} \
+          --query 'services[0]')
+        
+        RUNNING_COUNT=$(echo $SERVICE_INFO | jq -r '.runningCount')
+        DESIRED_COUNT=$(echo $SERVICE_INFO | jq -r '.desiredCount')
+        
+        echo "Tareas ejecutándose: $RUNNING_COUNT/$DESIRED_COUNT"
+        
+        if [ "$RUNNING_COUNT" -eq "$DESIRED_COUNT" ]; then
+          echo "✅ Despliegue automático exitoso - Todas las tareas están ejecutándose"
+        else
+          echo "❌ Despliegue automático incompleto - Algunas tareas no están ejecutándose"
+          exit 1
+        fi
+          
+    - name: Notificar despliegue automático exitoso
+      run: |
+        echo "🎉 ¡Despliegue automático completado exitosamente!"
+        echo "📦 Imagen: ${{ needs.build-docker-image.outputs.version }}"
+        echo "🏷️ Tag: ${{ needs.build-docker-image.outputs.version }}"
+        echo "🌍 Ambiente: production"
+        echo "⏰ Timestamp: $(date)"
+        echo ""
+        echo "💡 Para rollback, usa el workflow de despliegue manual"
 
