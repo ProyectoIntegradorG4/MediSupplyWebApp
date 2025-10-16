@@ -52,8 +52,6 @@ jobs:
   ci:
     name: Integración Continua
     runs-on: ubuntu-latest
-    needs: validate-version
-    if: always() && (needs.validate-version.result == 'success' || needs.validate-version.result == 'skipped')
     
     steps:
     - name: Checkout del código
