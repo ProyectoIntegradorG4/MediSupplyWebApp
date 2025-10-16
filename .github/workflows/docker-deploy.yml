@@ -73,11 +73,11 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
       
-    - name: Usar versión latest
+    - name: Obtener versión desde package.json
       id: version
       run: |
-        echo "Using 'latest' tag for deployment"
-        VERSION="latest"
+        echo "Getting version from package.json..."
+        VERSION=$(node -p "require('./package.json').version")
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "✅ Version set to: $VERSION"
       
@@ -87,6 +87,7 @@ jobs:
       with:
         images: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}
         tags: |
+          type=raw,value=${{ steps.version.outputs.version }}
           type=raw,value=latest
           
     - name: Construir y subir imagen Docker
