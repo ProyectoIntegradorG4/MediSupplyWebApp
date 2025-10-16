@@ -73,30 +73,13 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
       
-    - name: Obtener versión desde package.json
+    - name: Usar versión latest
       id: version
       run: |
-        echo "=== VERSION EXTRACTION DEBUG ==="
-        echo "Current directory: $(pwd)"
-        echo "Files in directory: $(ls -la)"
-        echo ""
-        echo "Package.json content:"
-        cat package.json
-        echo ""
-        echo "Extracting version..."
-        
-        # Simple method that should work
-        VERSION=$(node -p "require('./package.json').version")
-        echo "Extracted VERSION: '$VERSION'"
-        
-        if [ -z "$VERSION" ]; then
-          echo "❌ ERROR: VERSION is empty!"
-          exit 1
-        fi
-        
-        echo "✅ VERSION found: $VERSION"
+        echo "Using 'latest' tag for deployment"
+        VERSION="latest"
         echo "version=$VERSION" >> $GITHUB_OUTPUT
-        echo "=== END VERSION DEBUG ==="
+        echo "✅ Version set to: $VERSION"
       
     - name: Extraer metadatos
       id: meta
@@ -135,27 +118,37 @@ jobs:
         
     - name: Crear tag
       run: |
+        # Get version from package.json for git tag
+        GIT_VERSION=$(node -p "require('./package.json').version")
+        echo "Creating git tag: $GIT_VERSION"
+        
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git tag -a "${{ needs.build-docker-image.outputs.version }}" -m "Release ${{ needs.build-docker-image.outputs.version }}"
-        git push origin "${{ needs.build-docker-image.outputs.version }}"
+        git tag -a "$GIT_VERSION" -m "Release $GIT_VERSION"
+        git push origin "$GIT_VERSION"
         
     - name: Crear Release
-      uses: actions/create-release@v1
+      run: |
+        # Get version from package.json for release
+        RELEASE_VERSION=$(node -p "require('./package.json').version")
+        echo "Creating release: $RELEASE_VERSION"
+        
+        # Create release using GitHub CLI
+        gh release create "$RELEASE_VERSION" \
+          --title "Release $RELEASE_VERSION" \
+          --notes "## Release $RELEASE_VERSION
+
+### Docker Image
+- **Tag**: latest
+- **Digest**: ${{ needs.build-docker-image.outputs.image-digest }}
+
+### Despliegue Automático
+Este release se desplegará automáticamente a producción.
+
+### Para Rollback Manual
+Si necesitas desplegar una versión anterior, usa el workflow de despliegue manual."
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ needs.build-docker-image.outputs.version }}
-        release_name: Release ${{ needs.build-docker-image.outputs.version }}
-        body: |
-          ## Release ${{ needs.build-docker-image.outputs.version }}
-          
-          ### Docker Image
-          - **Tag**: ${{ needs.build-docker-image.outputs.image-tag }}
-          - **Digest**: ${{ needs.build-docker-image.outputs.image-digest }}
-          
-        draft: false
-        prerelease: false
 
   # Job de despliegue automático a AWS ECS
   auto-deploy-to-aws:
