@@ -11,52 +11,9 @@ env:
   ECR_REPOSITORY: medisupply-webapp
 
 jobs:
-  validate-version:
-    name: Validar Versión
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
-    steps:
-    - name: Checkout del código
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0  # Necesario para comparar con commits anteriores
-        
-    - name: Validar que la versión fue actualizada
-      run: |
-        # Obtener la versión actual del package.json
-        CURRENT_VERSION=$(node -p "require('./package.json').version")
-        echo "Versión actual: $CURRENT_VERSION"
-        
-        # Obtener la versión del commit anterior
-        PREVIOUS_VERSION=$(git show HEAD~1:package.json | node -p "JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8')).version" 2>/dev/null || echo "0.0.0")
-        echo "Versión anterior: $PREVIOUS_VERSION"
-        
-        # Comparar versiones usando semver
-        if [ "$CURRENT_VERSION" = "$PREVIOUS_VERSION" ]; then
-          echo "❌ ERROR: La versión en package.json no fue actualizada"
-          echo "Versión actual: $CURRENT_VERSION"
-          echo "Versión anterior: $PREVIOUS_VERSION"
-          echo ""
-          echo "Para solucionar esto:"
-          echo "1. Actualiza la versión en package.json"
-          echo "2. Haz commit de los cambios"
-          echo "3. Haz push nuevamente"
-          echo ""
-          echo "Ejemplo de versionado semántico:"
-          echo "- Patch: 1.0.0 → 1.0.1 (correcciones de bugs)"
-          echo "- Minor: 1.0.0 → 1.1.0 (nuevas características)"
-          echo "- Major: 1.0.0 → 2.0.0 (cambios incompatibles)"
-          exit 1
-        else
-          echo "✅ Versión actualizada correctamente"
-          echo "De $PREVIOUS_VERSION → $CURRENT_VERSION"
-        fi
-
   build-and-test:
     name: Construir y Probar
     runs-on: ubuntu-latest
-    needs: validate-version
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
     steps:
@@ -92,7 +49,7 @@ jobs:
   build-docker-image:
     name: Construir Imagen Docker
     runs-on: ubuntu-latest
-    needs: [validate-version, build-and-test]
+    needs: build-and-test
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
     outputs:

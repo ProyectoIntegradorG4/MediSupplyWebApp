@@ -38,9 +38,10 @@ git push origin main
 ```
 
 **Nota**: El push a `main` ahora:
-- ✅ Valida que la versión en `package.json` fue actualizada
 - ✅ Crea automáticamente un tag y release
 - ❌ NO desplegará automáticamente (requiere acción manual)
+
+**Importante**: La validación de versión ocurre en los **Pull Requests**, no en el merge a main.
 
 ### 5. Despliegue Manual
 Para desplegar una versión específica:
@@ -86,8 +87,9 @@ Necesitarás crear el servicio ECS manualmente a través de la Consola AWS o CLI
 
 ### Nuevo Flujo de CI/CD
 
-1. **Push a `main`** → Ejecuta pruebas, construye imagen Docker y crea tag/release
-2. **Despliegue Manual** → Usa el workflow manual para desplegar versiones específicas
+1. **Pull Request a `main`** → Valida versión, ejecuta pruebas y construye aplicación
+2. **Push a `main`** → Construye imagen Docker y crea tag/release
+3. **Despliegue Manual** → Usa el workflow manual para desplegar versiones específicas
 
 ### Ventajas del Nuevo Flujo
 
@@ -99,7 +101,7 @@ Necesitarás crear el servicio ECS manualmente a través de la Consola AWS o CLI
 
 ### 📋 Gestión de Versiones
 
-El pipeline ahora **requiere** que actualices la versión en `package.json` antes de hacer push a `main`:
+El pipeline ahora **requiere** que actualices la versión en `package.json` antes de crear un Pull Request a `main`:
 
 ```bash
 # Ejemplo de versionado semántico
@@ -108,13 +110,17 @@ El pipeline ahora **requiere** que actualices la versión en `package.json` ante
 # Major (cambios incompatibles): 1.0.0 → 2.0.0
 
 # 1. Actualizar versión en package.json
-# 2. Commit y push
+# 2. Crear branch y commit
+git checkout -b feature/new-feature
 git add package.json
 git commit -m "Bump version to 1.0.1"
-git push origin main
+git push origin feature/new-feature
+
+# 3. Crear Pull Request a main
+# La validación ocurrirá automáticamente en el PR
 ```
 
-**Si no actualizas la versión**, el pipeline fallará con un error claro explicando qué hacer.
+**Si no actualizas la versión**, el PR fallará con un error claro explicando qué hacer.
 
 ## 🔍 Monitoreo y Solución de Problemas
 
