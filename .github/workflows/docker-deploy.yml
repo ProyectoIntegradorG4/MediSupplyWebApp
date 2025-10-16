@@ -79,7 +79,11 @@ jobs:
       id: version
       run: |
         # Obtener versión desde package.json
+        echo "Checking package.json..."
+        cat package.json | grep version
         VERSION=$(node -p "require('./package.json').version")
+        echo "Raw VERSION: '$VERSION'"
+        echo "VERSION length: ${#VERSION}"
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "Package version: $VERSION"
       
@@ -160,12 +164,25 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
         
+    - name: Debug version output
+      run: |
+        VERSION="${{ needs.build-docker-image.outputs.version }}"
+        echo "Version from build-docker-image: '$VERSION'"
+        echo "Version length: ${#VERSION}"
+        
     - name: Verificar que la imagen existe en ECR
       run: |
-        echo "Verificando imagen: ${{ needs.build-docker-image.outputs.version }}"
+        VERSION="${{ needs.build-docker-image.outputs.version }}"
+        echo "Verificando imagen: $VERSION"
+        
+        if [ -z "$VERSION" ]; then
+          echo "❌ ERROR: Version está vacía"
+          exit 1
+        fi
+        
         aws ecr describe-images \
           --repository-name ${{ env.ECR_REPOSITORY }} \
-          --image-ids imageTag=${{ needs.build-docker-image.outputs.version }} \
+          --image-ids imageTag=$VERSION \
           --region ${{ env.AWS_REGION }}
         echo "✅ Imagen encontrada en ECR"
         
@@ -180,7 +197,8 @@ jobs:
       run: |
         # Construir la URI completa de la imagen
         ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-        IMAGE_URI="$ACCOUNT_ID.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ needs.build-docker-image.outputs.version }}"
+        VERSION="${{ needs.build-docker-image.outputs.version }}"
+        IMAGE_URI="$ACCOUNT_ID.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:$VERSION"
         
         echo "Actualizando imagen a: $IMAGE_URI"
         
