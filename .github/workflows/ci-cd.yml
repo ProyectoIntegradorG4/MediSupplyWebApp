@@ -7,6 +7,48 @@ on:
     branches: [ main, develop ]
 
 jobs:
+  validate-version:
+    name: Validar Versión
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
+    
+    steps:
+    - name: Checkout del código
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Validar que la versión fue actualizada
+      run: |
+        # Obtener la versión actual del package.json
+        CURRENT_VERSION=$(node -p "require('./package.json').version")
+        echo "Versión actual: $CURRENT_VERSION"
+        
+        # Obtener la versión del branch base (main)
+        BASE_VERSION=$(git show origin/${{ github.base_ref }}:package.json | node -p "JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8')).version" 2>/dev/null || echo "0.0.0")
+        echo "Versión en main: $BASE_VERSION"
+        
+        # Comparar versiones
+        if [ "$CURRENT_VERSION" = "$BASE_VERSION" ]; then
+          echo "❌ ERROR: La versión en package.json no fue actualizada"
+          echo "Versión actual: $CURRENT_VERSION"
+          echo "Versión en main: $BASE_VERSION"
+          echo ""
+          echo "Para solucionar esto:"
+          echo "1. Actualiza la versión en package.json"
+          echo "2. Haz commit de los cambios"
+          echo "3. Actualiza el PR"
+          echo ""
+          echo "Ejemplo de versionado semántico:"
+          echo "- Patch: 1.0.0 → 1.0.1 (correcciones de bugs)"
+          echo "- Minor: 1.0.0 → 1.1.0 (nuevas características)"
+          echo "- Major: 1.0.0 → 2.0.0 (cambios incompatibles)"
+          exit 1
+        else
+          echo "✅ Versión actualizada correctamente"
+          echo "De $BASE_VERSION → $CURRENT_VERSION"
+        fi
+
   ci:
     name: Integración Continua
     runs-on: ubuntu-latest
