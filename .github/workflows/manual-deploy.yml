@@ -24,7 +24,7 @@ on:
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: medisupply-webapp
-  ECS_SERVICE: medisupply-service
+  ECS_SERVICE: medisupply-web
   ECS_CLUSTER: medisupply-cluster
   ECS_TASK_DEFINITION: medisupply-task-definition
 
