@@ -10,7 +10,7 @@ jobs:
   validate-version:
     name: Validar Versión
     runs-on: ubuntu-latest
-    if: github.event.pull_request.target_branch == 'main'
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
     
     steps:
     - name: Checkout del código
