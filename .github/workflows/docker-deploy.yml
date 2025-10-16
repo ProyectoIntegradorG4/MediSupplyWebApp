@@ -77,12 +77,8 @@ jobs:
       run: |
         # Obtener versión desde package.json
         VERSION=$(node -p "require('./package.json').version")
-        # Agregar commit hash para unicidad
-        COMMIT_HASH=$(git rev-parse --short HEAD)
-        FULL_VERSION="${VERSION}-${COMMIT_HASH}"
-        echo "version=$FULL_VERSION" >> $GITHUB_OUTPUT
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "Package version: $VERSION"
-        echo "Full version with commit: $FULL_VERSION"
       
     - name: Extraer metadatos
       id: meta
