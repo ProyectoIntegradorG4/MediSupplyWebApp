@@ -29,12 +29,18 @@ aws iam create-access-key --user-name github-actions-medisupply
 
 ### 4. Crear Release y Desplegar
 ```bash
+# IMPORTANTE: Actualiza la versión en package.json antes de hacer push
+# Ejemplo: cambiar "version": "1.0.0" a "version": "1.0.1"
+
 git add .
-git commit -m "Add AWS deployment configuration"
+git commit -m "Bump version to 1.0.1"
 git push origin main
 ```
 
-**Nota**: El push a `main` ahora creará automáticamente un tag y release, pero NO desplegará automáticamente.
+**Nota**: El push a `main` ahora:
+- ✅ Valida que la versión en `package.json` fue actualizada
+- ✅ Crea automáticamente un tag y release
+- ❌ NO desplegará automáticamente (requiere acción manual)
 
 ### 5. Despliegue Manual
 Para desplegar una versión específica:
@@ -43,7 +49,7 @@ Para desplegar una versión específica:
 2. Selecciona **"Despliegue Manual a AWS"**
 3. Haz clic en **"Run workflow"**
 4. Completa los campos:
-   - **Tag**: Usa el tag generado automáticamente (ej: `2024.01.15-abc1234`)
+   - **Tag**: Usa el tag generado automáticamente (ej: `1.0.0-abc1234`)
    - **Ambiente**: Selecciona `production` o `staging`
    - **Confirmar despliegue**: ✅ Marca esta casilla
 5. Haz clic en **"Run workflow"**
@@ -89,6 +95,26 @@ Necesitarás crear el servicio ECS manualmente a través de la Consola AWS o CLI
 - ✅ **Rollback fácil**: Puedes desplegar cualquier versión anterior
 - ✅ **Testing**: Las imágenes se construyen y prueban antes del despliegue
 - ✅ **Trazabilidad**: Cada release tiene un tag único con fecha y commit
+- ✅ **Validación de versión**: El pipeline valida que la versión fue actualizada
+
+### 📋 Gestión de Versiones
+
+El pipeline ahora **requiere** que actualices la versión en `package.json` antes de hacer push a `main`:
+
+```bash
+# Ejemplo de versionado semántico
+# Patch (correcciones de bugs): 1.0.0 → 1.0.1
+# Minor (nuevas características): 1.0.0 → 1.1.0  
+# Major (cambios incompatibles): 1.0.0 → 2.0.0
+
+# 1. Actualizar versión en package.json
+# 2. Commit y push
+git add package.json
+git commit -m "Bump version to 1.0.1"
+git push origin main
+```
+
+**Si no actualizas la versión**, el pipeline fallará con un error claro explicando qué hacer.
 
 ## 🔍 Monitoreo y Solución de Problemas
 

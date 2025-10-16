@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag de la versión a desplegar (ej: 2024.01.15-abc1234)'
+        description: 'Tag de la versión a desplegar (ej: 1.0.0-abc1234)'
         required: true
         type: string
       environment:
