@@ -1,0 +1,140 @@
+name: Construir Imagen Docker y Crear Tag
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: medisupply-webapp
+
+jobs:
+  build-and-test:
+    name: Construir y Probar
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout del código
+      uses: actions/checkout@v4
+      
+    - name: Configurar Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Instalar dependencias
+      run: npm ci
+      
+    - name: Verificación de tipos
+      run: npm run type-check
+      
+    - name: Ejecutar pruebas con cobertura
+      run: npm run test:coverage
+      
+    - name: Construir aplicación
+      run: npm run build
+      
+    - name: Subir artefactos de construcción
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-files
+        path: dist/
+        retention-days: 7
+
+  # Job de construcción de imagen Docker
+  build-docker-image:
+    name: Construir Imagen Docker
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+      image-digest: ${{ steps.build.outputs.digest }}
+      version: ${{ steps.version.outputs.version }}
+    
+    steps:
+    - name: Checkout del código
+      uses: actions/checkout@v4
+      
+    - name: Configurar AWS CLI
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+        
+    - name: Login a Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+      
+    - name: Generar versión
+      id: version
+      run: |
+        # Generar versión basada en fecha y commit
+        VERSION=$(date +"%Y.%m.%d")-$(git rev-parse --short HEAD)
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Generated version: $VERSION"
+      
+    - name: Extraer metadatos
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}
+        tags: |
+          type=raw,value=${{ steps.version.outputs.version }}
+          type=raw,value=latest,enable={{is_default_branch}}
+          
+    - name: Construir y subir imagen Docker
+      id: build
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  # Job para crear tag de release
+  create-release-tag:
+    name: Crear Tag de Release
+    runs-on: ubuntu-latest
+    needs: build-docker-image
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Checkout del código
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Crear tag
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git tag -a "${{ needs.build-docker-image.outputs.version }}" -m "Release ${{ needs.build-docker-image.outputs.version }}"
+        git push origin "${{ needs.build-docker-image.outputs.version }}"
+        
+    - name: Crear Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ needs.build-docker-image.outputs.version }}
+        release_name: Release ${{ needs.build-docker-image.outputs.version }}
+        body: |
+          ## Release ${{ needs.build-docker-image.outputs.version }}
+          
+          ### Docker Image
+          - **Tag**: ${{ needs.build-docker-image.outputs.image-tag }}
+          - **Digest**: ${{ needs.build-docker-image.outputs.image-digest }}
+          
+          ### Para desplegar
+          Usa el workflow de despliegue manual con el tag: `${{ needs.build-docker-image.outputs.version }}`
+        draft: false
+        prerelease: false
+

@@ -25,7 +25,6 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import FileUploadModal from '../components/FileUploadModal';
 import { productsApi } from '../services/api';
-import { Product } from '../types/api';
 import { Spinner, Center } from '@chakra-ui/react';
 
 const Products = () => {

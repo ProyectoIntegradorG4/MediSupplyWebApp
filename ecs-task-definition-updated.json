@@ -1,0 +1,47 @@
+{
+  "family": "medisupply-task-definition",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::403245568912:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::403245568912:role/ecsTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "medisupply-webapp",
+      "image": "403245568912.dkr.ecr.us-east-1.amazonaws.com/medisupply-webapp:latest",
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/medisupply-webapp",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "curl -f http://localhost/health || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      },
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        }
+      ]
+    }
+  ]
+}
+
