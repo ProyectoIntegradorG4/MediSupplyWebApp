@@ -38,22 +38,31 @@ git push origin main
 ```
 
 **Nota**: El push a `main` ahora:
+- ✅ Valida versión (en PR)
 - ✅ Crea automáticamente un tag y release
-- ❌ NO desplegará automáticamente (requiere acción manual)
+- ✅ **Despliega automáticamente a producción**
 
-**Importante**: La validación de versión ocurre en los **Pull Requests**, no en el merge a main.
+**Importante**: 
+- La validación de versión ocurre en los **Pull Requests**
+- El despliegue automático ocurre después del merge a main
+- El despliegue manual está disponible para rollbacks
 
-### 5. Despliegue Manual
-Para desplegar una versión específica:
+### 5. Despliegue Manual (Para Rollbacks)
+Para desplegar una versión anterior o hacer rollback:
 
 1. Ve a **Actions** en tu repositorio de GitHub
 2. Selecciona **"Despliegue Manual a AWS"**
 3. Haz clic en **"Run workflow"**
 4. Completa los campos:
-   - **Tag**: Usa el tag generado automáticamente (ej: `1.0.0-abc1234`)
+   - **Tag**: Usa cualquier versión anterior (ej: `1.0.0`, `0.9.0`)
    - **Ambiente**: Selecciona `production` o `staging`
    - **Confirmar despliegue**: ✅ Marca esta casilla
 5. Haz clic en **"Run workflow"**
+
+**Casos de uso para despliegue manual:**
+- 🔄 **Rollback**: Desplegar una versión anterior si hay problemas
+- 🧪 **Testing**: Desplegar a staging para pruebas
+- 🚨 **Hotfix**: Desplegar una versión específica rápidamente
 
 ## 🔧 Configuración Manual (Alternativa)
 
@@ -88,8 +97,8 @@ Necesitarás crear el servicio ECS manualmente a través de la Consola AWS o CLI
 ### Nuevo Flujo de CI/CD
 
 1. **Pull Request a `main`** → Valida versión, ejecuta pruebas y construye aplicación
-2. **Push a `main`** → Construye imagen Docker y crea tag/release
-3. **Despliegue Manual** → Usa el workflow manual para desplegar versiones específicas
+2. **Push a `main`** → Construye imagen Docker, crea tag/release y **despliega automáticamente**
+3. **Despliegue Manual** → Disponible para rollbacks y casos especiales
 
 ### Ventajas del Nuevo Flujo
 
