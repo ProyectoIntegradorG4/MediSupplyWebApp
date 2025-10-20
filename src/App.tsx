@@ -21,7 +21,7 @@ function App() {
           <Route path="/health" element={<HealthCheck />} />
           <Route path="/login" element={<Login />} />
           <Route path="/products" element={<Products />} />
-          <Route path="/" element={<Navigate to="/products" />} />
+          <Route path="/" element={<Navigate to="/login" />} />
         </Routes>
       </Box>
     </Router>

@@ -74,6 +74,8 @@ jobs:
       
     - name: Construir aplicación
       run: npm run build
+      env:
+        VITE_API_URL: ${{ secrets.API_URL || 'http://localhost:8080' }}
       
     - name: Subir artefactos de construcción
       uses: actions/upload-artifact@v4
