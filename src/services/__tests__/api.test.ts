@@ -5,7 +5,7 @@ import { Product } from '../../types/api'
 
 // Mock axios
 vi.mock('axios')
-const mockedAxios = vi.mocked(axios)
+const mockedAxios = axios as any
 
 describe('Products API', () => {
   beforeEach(() => {
