@@ -29,4 +29,13 @@ export const providersApi = {
     const response = await axios.post<Provider>(`${API_URL}/proveedores/`, provider);
     return response.data;
   },
+  
+  createProduct: async (product: Omit<Product, 'category'> & { category?: string }): Promise<Product> => {
+    const productData = {
+      ...product,
+      category: product.category || 'General'
+    };
+    const response = await axios.post<Product>(`${API_URL}/products`, productData);
+    return response.data;
+  },
 };
