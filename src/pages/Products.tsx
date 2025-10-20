@@ -24,6 +24,7 @@ import { SearchIcon } from '@chakra-ui/icons';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import FileUploadModal from '../components/FileUploadModal';
+import ProductCreateModal from '../components/ProductCreateModal';
 import { productsApi } from '../services/api';
 import { Spinner, Center } from '@chakra-ui/react';
 
@@ -31,6 +32,7 @@ const Products = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState('10');
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const { data: products, isLoading, isError } = useQuery({
     queryKey: ['products'],
@@ -77,16 +79,29 @@ const Products = () => {
             </InputGroup>
           </Box>
           <HStack>
-            <Button variant="outline">CARGA INDIVIDUAL</Button>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setIsCreateModalOpen(true);
+              }}
+              bg={isCreateModalOpen ? 'red.100' : 'white'}
+            >
+              CARGA INDIVIDUAL {isCreateModalOpen ? '(OPEN)' : ''}
+            </Button>
             <Button colorScheme="blue" onClick={() => setIsUploadModalOpen(true)}>
               CARGA MASIVA
             </Button>
           </HStack>
-          <FileUploadModal 
-            isOpen={isUploadModalOpen}
-            onClose={() => setIsUploadModalOpen(false)}
-          />
         </HStack>
+        
+        <FileUploadModal 
+          isOpen={isUploadModalOpen}
+          onClose={() => setIsUploadModalOpen(false)}
+        />
+        <ProductCreateModal 
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+        />
       </Box>
 
       <Box overflowX="auto" position="relative">

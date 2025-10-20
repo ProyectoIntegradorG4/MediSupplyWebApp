@@ -21,13 +21,8 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
-    if (validateForm()) {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      navigate('/products');
-    } else {
+    
+    if (!validateForm()) {
       toast({
         title: 'Error',
         description: 'Please fill in all required fields',
@@ -35,8 +30,37 @@ const Login = () => {
         duration: 3000,
         isClosable: true,
       });
+      return;
     }
-    setIsSubmitting(false);
+
+    setIsSubmitting(true);
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Only navigate to products if login is successful
+      // For now, we'll simulate a successful login
+      navigate('/products');
+      
+      toast({
+        title: 'Success',
+        description: 'Login successful',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Login failed. Please try again.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
