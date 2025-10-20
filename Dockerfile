@@ -16,6 +16,10 @@ COPY . .
 # Construir la aplicación
 RUN npm run build
 
+# Crear archivos faltantes para evitar 404s
+RUN cp /app/public/logo.png /app/dist/favicon.ico
+RUN cp /app/public/logo.png /app/dist/apple-touch-icon-precomposed.png
+
 # Etapa de producción
 FROM nginx:alpine
 
