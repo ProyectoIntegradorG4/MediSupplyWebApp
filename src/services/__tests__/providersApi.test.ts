@@ -39,7 +39,7 @@ describe('Providers API', () => {
 
       const result = await providersApi.getProviders()
 
-      expect(mockedAxios.get).toHaveBeenCalledWith(`${API_URL}/proveedores`)
+      expect(mockedAxios.get).toHaveBeenCalledWith(`${API_URL}/proveedores/`)
       expect(result).toEqual(mockProviders)
     })
 
@@ -57,7 +57,7 @@ describe('Providers API', () => {
 
       await providersApi.getProviders()
 
-      expect(mockedAxios.get).toHaveBeenCalledWith(`${API_URL}/proveedores`)
+      expect(mockedAxios.get).toHaveBeenCalledWith(`${API_URL}/proveedores/`)
     })
   })
 
@@ -82,7 +82,7 @@ describe('Providers API', () => {
       const result = await providersApi.createProvider(newProvider)
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        `${API_URL}/proveedores`,
+        `${API_URL}/proveedores/`,
         newProvider
       )
       expect(result).toEqual(createdProvider)
