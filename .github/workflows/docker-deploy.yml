@@ -101,6 +101,8 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
+        build-args: |
+          VITE_API_URL=${{ secrets.API_URL }}
 
   # Job para crear tag de release
   create-release-tag:
