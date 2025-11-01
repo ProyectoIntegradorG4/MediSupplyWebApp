@@ -6,6 +6,14 @@ export interface Product {
   location: string;
 }
 
+export interface Provider {
+  id: number;
+  nombre: string;
+  pais: string;
+  rating: number;
+  activo: boolean;
+}
+
 export interface ApiResponse<T> {
   data: T;
   message?: string;
