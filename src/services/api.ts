@@ -21,7 +21,7 @@ export const productsApi = {
 
 export const providersApi = {
   getProviders: async (): Promise<Provider[]> => {
-    const response = await axios.get<Provider[]>(`${API_URL}/proveedores`);
+    const response = await axios.get<Provider[]>(`${API_URL}/proveedores/`);
     return response.data;
   },
 
