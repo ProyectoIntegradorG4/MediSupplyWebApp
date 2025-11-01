@@ -34,7 +34,9 @@ describe('Providers API', () => {
       ]
 
       mockedAxios.get.mockResolvedValueOnce({
-        data: mockProviders
+        data: {
+          data: mockProviders
+        }
       })
 
       const result = await providersApi.getProviders()
@@ -52,7 +54,9 @@ describe('Providers API', () => {
 
     it('should use configured API URL', async () => {
       mockedAxios.get.mockResolvedValueOnce({
-        data: []
+        data: {
+          data: []
+        }
       })
 
       await providersApi.getProviders()
