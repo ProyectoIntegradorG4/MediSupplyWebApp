@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Product, Provider } from '../types/api';
+import { ApiResponse, Product, Provider } from '../types/api';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
@@ -21,8 +21,8 @@ export const productsApi = {
 
 export const providersApi = {
   getProviders: async (): Promise<Provider[]> => {
-    const response = await axios.get<Provider[]>(`${API_URL}/proveedores/`);
-    return response.data;
+    const response = await axios.get<ApiResponse<Provider[]>>(`${API_URL}/proveedores/`);
+    return response.data.data;
   },
 
   createProvider: async (provider: Omit<Provider, 'id'>): Promise<Provider> => {
