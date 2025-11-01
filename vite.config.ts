@@ -15,11 +15,15 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: false,
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks: undefined,
       },
     },
+  },
+  esbuild: {
+    drop: [], // Don't drop console.log statements
   },
   server: {
     port: 5173,

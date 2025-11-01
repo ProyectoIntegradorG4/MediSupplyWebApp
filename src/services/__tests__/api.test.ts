@@ -7,6 +7,8 @@ import { Product } from '../../types/api'
 vi.mock('axios')
 const mockedAxios = axios as any
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+
 describe('Products API', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -32,14 +34,12 @@ describe('Products API', () => {
       ]
 
       mockedAxios.get.mockResolvedValueOnce({
-        data: {
-          data: mockProducts
-        }
+        data: mockProducts
       })
 
       const result = await productsApi.getProducts()
 
-      expect(mockedAxios.get).toHaveBeenCalledWith('http://localhost:8080/products')
+      expect(mockedAxios.get).toHaveBeenCalledWith(`${API_URL}/productos`)
       expect(result).toEqual(mockProducts)
     })
 
@@ -50,14 +50,14 @@ describe('Products API', () => {
       await expect(productsApi.getProducts()).rejects.toThrow(errorMessage)
     })
 
-    it('should use default API URL when environment variable is not set', async () => {
+    it('should use configured API URL', async () => {
       mockedAxios.get.mockResolvedValueOnce({
-        data: { data: [] }
+        data: []
       })
 
       await productsApi.getProducts()
 
-      expect(mockedAxios.get).toHaveBeenCalledWith('http://localhost:8080/products')
+      expect(mockedAxios.get).toHaveBeenCalledWith(`${API_URL}/productos`)
     })
   })
 
@@ -81,15 +81,13 @@ describe('Products API', () => {
       }
 
       mockedAxios.post.mockResolvedValueOnce({
-        data: {
-          data: createdProduct
-        }
+        data: createdProduct
       })
 
       const result = await productsApi.createProduct(newProduct)
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        'http://localhost:8080/products',
+        `${API_URL}/productos`,
         newProduct
       )
       expect(result).toEqual(createdProduct)
@@ -123,15 +121,13 @@ describe('Products API', () => {
       }
 
       mockedAxios.post.mockResolvedValueOnce({
-        data: {
-          data: createdProduct
-        }
+        data: createdProduct
       })
 
       await productsApi.createProduct(newProduct)
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        'http://localhost:8080/products',
+        `${API_URL}/productos`,
         {
           ...newProduct,
           category: 'General'
