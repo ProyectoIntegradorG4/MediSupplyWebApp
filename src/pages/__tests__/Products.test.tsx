@@ -63,7 +63,7 @@ describe('Products Component', () => {
       </TestWrapper>
     )
 
-    expect(screen.getByText('Ventas y Proveedores')).toBeInTheDocument()
+    expect(screen.getByText('Proveedores y Productos')).toBeInTheDocument()
     expect(screen.getByText('PROVEEDORES')).toBeInTheDocument()
     expect(screen.getByText('PRODUCTOS')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('SKU')).toBeInTheDocument()

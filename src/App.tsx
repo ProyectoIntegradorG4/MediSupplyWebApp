@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Box } from '@chakra-ui/react'
 import Login from './pages/Login'
 import Products from './pages/Products'
+import Providers from './pages/Providers'
 
 // Health check component for AWS ECS
 function HealthCheck() {
@@ -20,6 +21,7 @@ function App() {
         <Routes>
           <Route path="/health" element={<HealthCheck />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/providers" element={<Providers />} />
           <Route path="/products" element={<Products />} />
           <Route path="/" element={<Navigate to="/login" />} />
         </Routes>
