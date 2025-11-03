@@ -12,10 +12,16 @@ vi.mock('../../services/api', () => ({
       productoId: '3',
       sku: 'SKU003',
       nombre: 'New Product',
-      categoria: 'General',
-      formaFarmaceutica: 'Tableta',
-      requierePrescripcion: 'False',
-      registroSanitario: 'INVIMA-125',
+      descripcion: 'Test Descripcion',
+      categoriaId: 'CAT-VAC-001',
+      subcategoria: 'Vacunas',
+      laboratorio: '',
+      principioActivo: '',
+      concentracion: '',
+      formaFarmaceutica: 'Test',
+      registroSanitario: 'INVIMA 2025M-000123-R1',
+      requierePrescripcion: false,
+      codigoBarras: '',
       estado_producto: 'activo',
       actualizado_en: '2025-11-03T01:00:00',
       fechaVencimiento: '2026-01-01',
@@ -87,10 +93,12 @@ describe('ProductCreateModal Component', () => {
       </TestWrapper>
     )
 
-    // Clear the SKU and ubicacion fields to trigger validation
+    // Clear required fields to trigger validation
+    const nameInput = screen.getByDisplayValue('Producto 1')
     const skuInput = screen.getByPlaceholderText('Código SKU')
     const ubicacionInput = screen.getByPlaceholderText('Ubicación específica')
-    
+
+    fireEvent.change(nameInput, { target: { value: '' } })
     fireEvent.change(skuInput, { target: { value: '' } })
     fireEvent.change(ubicacionInput, { target: { value: '' } })
 
@@ -98,8 +106,10 @@ describe('ProductCreateModal Component', () => {
     fireEvent.click(acceptButton)
 
     await waitFor(() => {
+      expect(screen.getByText('El nombre es requerido')).toBeInTheDocument()
       expect(screen.getByText('El SKU es requerido')).toBeInTheDocument()
       expect(screen.getByText('La ubicación es requerida')).toBeInTheDocument()
+      expect(screen.getByText('La fecha de vencimiento es requerida')).toBeInTheDocument()
     })
   })
 
@@ -117,11 +127,13 @@ describe('ProductCreateModal Component', () => {
     const skuInput = screen.getByPlaceholderText('Código SKU')
     const ubicacionInput = screen.getByPlaceholderText('Ubicación específica')
     const stockInput = screen.getByPlaceholderText('Cantidad en stock')
+    const fechaInput = screen.getByLabelText('Fecha de Vencimiento *')
 
     fireEvent.change(nameInput, { target: { value: 'Test Product' } })
     fireEvent.change(skuInput, { target: { value: 'SKU123' } })
     fireEvent.change(ubicacionInput, { target: { value: 'A1-B2-C3' } })
     fireEvent.change(stockInput, { target: { value: '10' } })
+    fireEvent.change(fechaInput, { target: { value: '2026-12-31' } })
 
     const acceptButton = screen.getByText('ACEPTAR')
     fireEvent.click(acceptButton)
@@ -130,10 +142,20 @@ describe('ProductCreateModal Component', () => {
       expect(mockCreateProduct).toHaveBeenCalledWith({
         sku: 'SKU123',
         nombre: 'Test Product',
+        descripcion: 'Test Descripcion',
+        categoriaId: 'CAT-VAC-001',
+        subcategoria: 'Vacunas',
+        laboratorio: '',
+        principioActivo: '',
+        concentracion: '',
+        formaFarmaceutica: 'Test',
+        registroSanitario: 'INVIMA 2025M-000123-R1',
+        requierePrescripcion: false,
+        codigoBarras: '',
+        fechaVencimiento: '2026-12-31',
         stock: '10',
         location: 'Bodega 1',
-        ubicacion: 'A1-B2-C3',
-        categoria: 'General'
+        ubicacion: 'A1-B2-C3'
       })
     })
 

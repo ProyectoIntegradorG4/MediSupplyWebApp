@@ -2,10 +2,16 @@ export interface Product {
   productoId: string;
   sku: string;
   nombre: string;
-  categoria: string;
+  descripcion: string;
+  categoriaId: string;
+  subcategoria: string;
+  laboratorio: string;
+  principioActivo: string;
+  concentracion: string;
   formaFarmaceutica: string;
-  requierePrescripcion: string;
   registroSanitario: string;
+  requierePrescripcion: boolean;
+  codigoBarras: string;
   estado_producto: string;
   actualizado_en: string;
   fechaVencimiento: string;
