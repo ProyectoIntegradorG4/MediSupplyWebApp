@@ -27,7 +27,11 @@ export const productsApi = {
     location: string;
     ubicacion: string;
   }): Promise<Product> => {
-    const response = await axios.post<Product>(`${API_URL}/productos`, productData);
+    const response = await axios.post<Product>(`${API_URL}/productos`, productData, {
+      headers: {
+        'X-User-Role': 'Administrador de Compras',
+      },
+    });
     return response.data;
   },
 
