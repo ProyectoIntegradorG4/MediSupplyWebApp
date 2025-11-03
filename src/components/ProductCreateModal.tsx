@@ -31,6 +31,7 @@ interface FormData {
   location: string;
   ubicacion: string;
   stock: string;
+  fechaVencimiento: string;
 }
 
 const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreateModalProps) => {
@@ -40,8 +41,9 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
     location: 'Bodega 1',
     ubicacion: '',
     stock: '',
+    fechaVencimiento: '',
   });
-  
+
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const toast = useToast();
@@ -56,7 +58,7 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
 
   const validateForm = (): boolean => {
     const newErrors: Partial<FormData> = {};
-    
+
     if (!formData.name.trim()) {
       newErrors.name = 'El nombre es requerido';
     }
@@ -68,6 +70,9 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
     }
     if (!formData.ubicacion.trim()) {
       newErrors.ubicacion = 'La ubicación es requerida';
+    }
+    if (!formData.fechaVencimiento) {
+      newErrors.fechaVencimiento = 'La fecha de vencimiento es requerida';
     }
 
     setErrors(newErrors);
@@ -81,13 +86,24 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
 
     setIsSubmitting(true);
     try {
-      // Create product object
+      // Create product object with hardcoded fields
       const newProduct = {
         sku: formData.sku,
-        name: formData.name,
-        stock: parseInt(formData.stock) || 0,
-        location: formData.ubicacion,
-        category: 'General', // Default category
+        nombre: formData.name,
+        descripcion: 'Test Descripcion',
+        categoriaId: 'CAT-VAC-001',
+        subcategoria: 'Vacunas',
+        laboratorio: '',
+        principioActivo: '',
+        concentracion: '',
+        formaFarmaceutica: 'Test',
+        registroSanitario: 'INVIMA 2025M-000123-R1',
+        requierePrescripcion: false,
+        codigoBarras: '',
+        fechaVencimiento: formData.fechaVencimiento,
+        stock: formData.stock || '0',
+        location: formData.location,
+        ubicacion: formData.ubicacion,
       };
 
       // Call the actual API
@@ -111,6 +127,7 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
         location: 'Bodega 1',
         ubicacion: '',
         stock: '',
+        fechaVencimiento: '',
       });
       setErrors({});
       onClose();
@@ -133,6 +150,7 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
       location: 'Bodega 1',
       ubicacion: '',
       stock: '',
+      fechaVencimiento: '',
     });
     setErrors({});
     onClose();
@@ -142,9 +160,9 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
     <Modal isOpen={isOpen} onClose={handleClose} size="lg" isCentered>
       <ModalOverlay />
       <ModalContent maxW="600px" borderRadius="lg" boxShadow="xl">
-        <ModalHeader 
-          fontSize="lg" 
-          fontWeight="semibold" 
+        <ModalHeader
+          fontSize="lg"
+          fontWeight="semibold"
           color="gray.700"
           borderBottom="1px"
           borderColor="gray.200"
@@ -158,9 +176,9 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
               {/* Left Column */}
               <VStack spacing={5} flex={1} align="stretch">
                 <FormControl isInvalid={!!errors.name}>
-                  <FormLabel 
-                    fontSize="sm" 
-                    fontWeight="medium" 
+                  <FormLabel
+                    fontSize="sm"
+                    fontWeight="medium"
                     color="gray.700"
                     mb={2}
                   >
@@ -182,9 +200,9 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
                 </FormControl>
 
                 <FormControl isInvalid={!!errors.location}>
-                  <FormLabel 
-                    fontSize="sm" 
-                    fontWeight="medium" 
+                  <FormLabel
+                    fontSize="sm"
+                    fontWeight="medium"
                     color="gray.700"
                     mb={2}
                   >
@@ -210,9 +228,9 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
                 </FormControl>
 
                 <FormControl>
-                  <FormLabel 
-                    fontSize="sm" 
-                    fontWeight="medium" 
+                  <FormLabel
+                    fontSize="sm"
+                    fontWeight="medium"
                     color="gray.700"
                     mb={2}
                   >
@@ -237,9 +255,9 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
               {/* Right Column */}
               <VStack spacing={5} flex={1} align="stretch">
                 <FormControl isInvalid={!!errors.sku}>
-                  <FormLabel 
-                    fontSize="sm" 
-                    fontWeight="medium" 
+                  <FormLabel
+                    fontSize="sm"
+                    fontWeight="medium"
                     color="gray.700"
                     mb={2}
                   >
@@ -261,9 +279,9 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
                 </FormControl>
 
                 <FormControl isInvalid={!!errors.ubicacion}>
-                  <FormLabel 
-                    fontSize="sm" 
-                    fontWeight="medium" 
+                  <FormLabel
+                    fontSize="sm"
+                    fontWeight="medium"
                     color="gray.700"
                     mb={2}
                   >
@@ -283,19 +301,43 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
                   />
                   <FormErrorMessage fontSize="xs">{errors.ubicacion}</FormErrorMessage>
                 </FormControl>
+
+                <FormControl isInvalid={!!errors.fechaVencimiento}>
+                  <FormLabel
+                    fontSize="sm"
+                    fontWeight="medium"
+                    color="gray.700"
+                    mb={2}
+                  >
+                    Fecha de Vencimiento *
+                  </FormLabel>
+                  <Input
+                    type="date"
+                    value={formData.fechaVencimiento}
+                    onChange={(e) => handleInputChange('fechaVencimiento', e.target.value)}
+                    size="md"
+                    borderRadius="md"
+                    borderColor="gray.300"
+                    _focus={{
+                      borderColor: 'blue.500',
+                      boxShadow: '0 0 0 1px #0078D4',
+                    }}
+                  />
+                  <FormErrorMessage fontSize="xs">{errors.fechaVencimiento}</FormErrorMessage>
+                </FormControl>
               </VStack>
             </HStack>
           </VStack>
         </ModalBody>
 
-        <ModalFooter 
-          gap={3} 
+        <ModalFooter
+          gap={3}
           pt={4}
           borderTop="1px"
           borderColor="gray.200"
         >
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={handleClose}
             size="md"
             fontWeight="medium"

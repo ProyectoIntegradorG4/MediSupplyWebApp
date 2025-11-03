@@ -13,14 +13,15 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { useState, useRef } from 'react';
-import axios from 'axios';
+import { productsApi } from '../services/api';
 
 interface FileUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onUploadSuccess?: () => void;
 }
 
-const FileUploadModal = ({ isOpen, onClose }: FileUploadModalProps) => {
+const FileUploadModal = ({ isOpen, onClose, onUploadSuccess }: FileUploadModalProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -54,24 +55,22 @@ const FileUploadModal = ({ isOpen, onClose }: FileUploadModalProps) => {
   const handleUpload = async () => {
     if (!selectedFile) return;
 
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-    formData.append('created_by', 'user123'); // TODO: Replace with actual user
-
     setIsUploading(true);
     try {
-      await axios.post('http://localhost:8000/upload-csv', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      
+      await productsApi.uploadProductsCsv(selectedFile, 'user123'); // TODO: Replace with actual user
+
       toast({
         title: 'Éxito',
         description: 'Archivo cargado correctamente',
         status: 'success',
         duration: 3000,
       });
+
+      if (onUploadSuccess) {
+        onUploadSuccess();
+      }
+
+      setSelectedFile(null);
       onClose();
     } catch (error) {
       toast({
