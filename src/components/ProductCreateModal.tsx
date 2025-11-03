@@ -84,10 +84,11 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
       // Create product object
       const newProduct = {
         sku: formData.sku,
-        name: formData.name,
-        stock: parseInt(formData.stock) || 0,
-        location: formData.ubicacion,
-        category: 'General', // Default category
+        nombre: formData.name,
+        stock: formData.stock || '0',
+        location: formData.location,
+        ubicacion: formData.ubicacion,
+        categoria: 'General', // Default category
       };
 
       // Call the actual API
