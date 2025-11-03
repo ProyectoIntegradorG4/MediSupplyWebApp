@@ -1,21 +1,39 @@
 import axios from 'axios';
-import { ApiResponse, Product, Provider } from '../types/api';
+import { ApiResponse, Product, Provider, PaginatedResponse } from '../types/api';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 export const productsApi = {
   getProducts: async (): Promise<Product[]> => {
-    const response = await axios.get<Product[]>(`${API_URL}/productos`);
+    const response = await axios.get<PaginatedResponse<Product>>(`${API_URL}/productos`);
+    return response.data.items;
+  },
+
+  createProduct: async (productData: {
+    sku: string;
+    nombre: string;
+    categoria?: string;
+    stock: string;
+    location: string;
+    ubicacion: string;
+  }): Promise<Product> => {
+    const response = await axios.post<Product>(`${API_URL}/productos`, {
+      ...productData,
+      categoria: productData.categoria || 'General'
+    });
     return response.data;
   },
 
-  createProduct: async (product: Omit<Product, 'category'> & { category?: string }): Promise<Product> => {
-    const productData = {
-      ...product,
-      category: product.category || 'General'
-    };
-    const response = await axios.post<Product>(`${API_URL}/productos`, productData);
-    return response.data;
+  uploadProductsCsv: async (file: File, createdBy: string): Promise<void> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('created_by', createdBy);
+
+    await axios.post(`${API_URL}/productos/upload-csv`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   },
 };
 

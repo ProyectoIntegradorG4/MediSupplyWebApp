@@ -9,11 +9,19 @@ import { productsApi } from '../../services/api'
 vi.mock('../../services/api', () => ({
   productsApi: {
     createProduct: vi.fn(() => Promise.resolve({
+      productoId: '3',
       sku: 'SKU003',
-      name: 'New Product',
-      category: 'General',
-      stock: 0,
-      location: 'Bodega 1'
+      nombre: 'New Product',
+      categoria: 'General',
+      formaFarmaceutica: 'Tableta',
+      requierePrescripcion: 'False',
+      registroSanitario: 'INVIMA-125',
+      estado_producto: 'activo',
+      actualizado_en: '2025-11-03T01:00:00',
+      fechaVencimiento: '2026-01-01',
+      stock: '0',
+      location: 'Bodega 1',
+      ubicacion: 'Bogotá D.C.'
     }))
   }
 }))
@@ -121,10 +129,11 @@ describe('ProductCreateModal Component', () => {
     await waitFor(() => {
       expect(mockCreateProduct).toHaveBeenCalledWith({
         sku: 'SKU123',
-        name: 'Test Product',
-        stock: 10,
-        location: 'A1-B2-C3',
-        category: 'General'
+        nombre: 'Test Product',
+        stock: '10',
+        location: 'Bodega 1',
+        ubicacion: 'A1-B2-C3',
+        categoria: 'General'
       })
     })
 

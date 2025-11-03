@@ -18,23 +18,44 @@ describe('Products API', () => {
     it('should fetch products successfully', async () => {
       const mockProducts: Product[] = [
         {
+          productoId: '1',
           sku: 'SKU001',
-          name: 'Test Product 1',
-          category: 'General',
-          stock: 10,
-          location: 'Bodega 1'
+          nombre: 'Test Product 1',
+          categoria: 'General',
+          formaFarmaceutica: 'Tableta',
+          requierePrescripcion: 'False',
+          registroSanitario: 'INVIMA-123',
+          estado_producto: 'activo',
+          actualizado_en: '2025-11-03T01:00:00',
+          fechaVencimiento: '2026-01-01',
+          stock: '10',
+          location: 'Bodega 1',
+          ubicacion: 'Bogotá D.C.'
         },
         {
+          productoId: '2',
           sku: 'SKU002',
-          name: 'Test Product 2', 
-          category: 'General',
-          stock: 5,
-          location: 'Bodega 2'
+          nombre: 'Test Product 2',
+          categoria: 'General',
+          formaFarmaceutica: 'Tableta',
+          requierePrescripcion: 'False',
+          registroSanitario: 'INVIMA-124',
+          estado_producto: 'activo',
+          actualizado_en: '2025-11-03T01:00:00',
+          fechaVencimiento: '2026-01-01',
+          stock: '5',
+          location: 'Bodega 2',
+          ubicacion: 'Medellín'
         }
       ]
 
       mockedAxios.get.mockResolvedValueOnce({
-        data: mockProducts
+        data: {
+          total: 2,
+          items: mockProducts,
+          page: 1,
+          page_size: 25
+        }
       })
 
       const result = await productsApi.getProducts()
@@ -52,7 +73,12 @@ describe('Products API', () => {
 
     it('should use configured API URL', async () => {
       mockedAxios.get.mockResolvedValueOnce({
-        data: []
+        data: {
+          total: 0,
+          items: [],
+          page: 1,
+          page_size: 25
+        }
       })
 
       await productsApi.getProducts()
@@ -65,19 +91,27 @@ describe('Products API', () => {
     it('should create a product successfully', async () => {
       const newProduct = {
         sku: 'SKU003',
-        name: 'New Product',
-        stock: 0,
+        nombre: 'New Product',
+        stock: '0',
         location: 'Bodega 1',
-        category: 'General'
+        ubicacion: 'Bogotá D.C.',
+        categoria: 'General'
       }
 
       const createdProduct: Product = {
-        ...newProduct,
+        productoId: '3',
         sku: 'SKU003',
-        name: 'New Product',
-        category: 'General',
-        stock: 0,
-        location: 'Bodega 1'
+        nombre: 'New Product',
+        categoria: 'General',
+        formaFarmaceutica: 'Tableta',
+        requierePrescripcion: 'False',
+        registroSanitario: 'INVIMA-125',
+        estado_producto: 'activo',
+        actualizado_en: '2025-11-03T01:00:00',
+        fechaVencimiento: '2026-01-01',
+        stock: '0',
+        location: 'Bodega 1',
+        ubicacion: 'Bogotá D.C.'
       }
 
       mockedAxios.post.mockResolvedValueOnce({
@@ -96,9 +130,10 @@ describe('Products API', () => {
     it('should handle create product errors', async () => {
       const newProduct = {
         sku: 'SKU003',
-        name: 'New Product',
-        stock: 0,
-        location: 'Bodega 1'
+        nombre: 'New Product',
+        stock: '0',
+        location: 'Bodega 1',
+        ubicacion: 'Bogotá D.C.'
       }
 
       const errorMessage = 'Validation Error'
@@ -110,14 +145,26 @@ describe('Products API', () => {
     it('should add default category if not provided', async () => {
       const newProduct = {
         sku: 'SKU003',
-        name: 'New Product',
-        stock: 0,
-        location: 'Bodega 1'
+        nombre: 'New Product',
+        stock: '0',
+        location: 'Bodega 1',
+        ubicacion: 'Bogotá D.C.'
       }
 
       const createdProduct: Product = {
-        ...newProduct,
-        category: 'General'
+        productoId: '3',
+        sku: 'SKU003',
+        nombre: 'New Product',
+        categoria: 'General',
+        formaFarmaceutica: 'Tableta',
+        requierePrescripcion: 'False',
+        registroSanitario: 'INVIMA-125',
+        estado_producto: 'activo',
+        actualizado_en: '2025-11-03T01:00:00',
+        fechaVencimiento: '2026-01-01',
+        stock: '0',
+        location: 'Bodega 1',
+        ubicacion: 'Bogotá D.C.'
       }
 
       mockedAxios.post.mockResolvedValueOnce({
@@ -130,7 +177,7 @@ describe('Products API', () => {
         `${API_URL}/productos`,
         {
           ...newProduct,
-          category: 'General'
+          categoria: 'General'
         }
       )
     })

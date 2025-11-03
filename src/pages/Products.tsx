@@ -22,7 +22,7 @@ import {
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import FileUploadModal from '../components/FileUploadModal';
 import ProductCreateModal from '../components/ProductCreateModal';
@@ -31,6 +31,7 @@ import { Spinner, Center } from '@chakra-ui/react';
 
 const Products = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState('10');
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -40,6 +41,10 @@ const Products = () => {
     queryKey: ['products'],
     queryFn: productsApi.getProducts,
   });
+
+  const handleUploadSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ['products'] });
+  };
 
   const filteredProducts = (products || []).filter(product =>
     product.sku.toLowerCase().includes(searchTerm.toLowerCase())
@@ -99,9 +104,10 @@ const Products = () => {
           </HStack>
         </HStack>
         
-        <FileUploadModal 
+        <FileUploadModal
           isOpen={isUploadModalOpen}
           onClose={() => setIsUploadModalOpen(false)}
+          onUploadSuccess={handleUploadSuccess}
         />
         <ProductCreateModal 
           isOpen={isCreateModalOpen}
@@ -147,10 +153,10 @@ const Products = () => {
               </Tr>
             ) : (
               filteredProducts.map((product) => (
-                <Tr key={product.sku}>
+                <Tr key={product.productoId}>
                   <Td>{product.sku}</Td>
-                  <Td>{product.name}</Td>
-                  <Td>{product.category}</Td>
+                  <Td>{product.nombre}</Td>
+                  <Td>{product.categoria}</Td>
                   <Td isNumeric>{product.stock}</Td>
                   <Td>{product.location}</Td>
                 </Tr>
