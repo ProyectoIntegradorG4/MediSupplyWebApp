@@ -21,10 +21,16 @@ describe('Products API', () => {
           productoId: '1',
           sku: 'SKU001',
           nombre: 'Test Product 1',
-          categoria: 'General',
+          descripcion: 'Test Descripcion',
+          categoriaId: 'CAT-VAC-001',
+          subcategoria: 'Vacunas',
+          laboratorio: '',
+          principioActivo: '',
+          concentracion: '',
           formaFarmaceutica: 'Tableta',
-          requierePrescripcion: 'False',
           registroSanitario: 'INVIMA-123',
+          requierePrescripcion: false,
+          codigoBarras: '',
           estado_producto: 'activo',
           actualizado_en: '2025-11-03T01:00:00',
           fechaVencimiento: '2026-01-01',
@@ -36,10 +42,16 @@ describe('Products API', () => {
           productoId: '2',
           sku: 'SKU002',
           nombre: 'Test Product 2',
-          categoria: 'General',
+          descripcion: 'Test Descripcion',
+          categoriaId: 'CAT-VAC-001',
+          subcategoria: 'Vacunas',
+          laboratorio: '',
+          principioActivo: '',
+          concentracion: '',
           formaFarmaceutica: 'Tableta',
-          requierePrescripcion: 'False',
           registroSanitario: 'INVIMA-124',
+          requierePrescripcion: false,
+          codigoBarras: '',
           estado_producto: 'activo',
           actualizado_en: '2025-11-03T01:00:00',
           fechaVencimiento: '2026-01-01',
@@ -92,20 +104,36 @@ describe('Products API', () => {
       const newProduct = {
         sku: 'SKU003',
         nombre: 'New Product',
+        descripcion: 'Test Descripcion',
+        categoriaId: 'CAT-VAC-001',
+        subcategoria: 'Vacunas',
+        laboratorio: '',
+        principioActivo: '',
+        concentracion: '',
+        formaFarmaceutica: 'Test',
+        registroSanitario: 'INVIMA 2025M-000123-R1',
+        requierePrescripcion: false,
+        codigoBarras: '',
+        fechaVencimiento: '2026-01-01',
         stock: '0',
         location: 'Bodega 1',
-        ubicacion: 'Bogotá D.C.',
-        categoria: 'General'
+        ubicacion: 'Bogotá D.C.'
       }
 
       const createdProduct: Product = {
         productoId: '3',
         sku: 'SKU003',
         nombre: 'New Product',
-        categoria: 'General',
-        formaFarmaceutica: 'Tableta',
-        requierePrescripcion: 'False',
-        registroSanitario: 'INVIMA-125',
+        descripcion: 'Test Descripcion',
+        categoriaId: 'CAT-VAC-001',
+        subcategoria: 'Vacunas',
+        laboratorio: '',
+        principioActivo: '',
+        concentracion: '',
+        formaFarmaceutica: 'Test',
+        registroSanitario: 'INVIMA 2025M-000123-R1',
+        requierePrescripcion: false,
+        codigoBarras: '',
         estado_producto: 'activo',
         actualizado_en: '2025-11-03T01:00:00',
         fechaVencimiento: '2026-01-01',
@@ -131,6 +159,17 @@ describe('Products API', () => {
       const newProduct = {
         sku: 'SKU003',
         nombre: 'New Product',
+        descripcion: 'Test Descripcion',
+        categoriaId: 'CAT-VAC-001',
+        subcategoria: 'Vacunas',
+        laboratorio: '',
+        principioActivo: '',
+        concentracion: '',
+        formaFarmaceutica: 'Test',
+        registroSanitario: 'INVIMA 2025M-000123-R1',
+        requierePrescripcion: false,
+        codigoBarras: '',
+        fechaVencimiento: '2026-01-01',
         stock: '0',
         location: 'Bodega 1',
         ubicacion: 'Bogotá D.C.'
@@ -142,10 +181,21 @@ describe('Products API', () => {
       await expect(productsApi.createProduct(newProduct)).rejects.toThrow(errorMessage)
     })
 
-    it('should add default category if not provided', async () => {
+    it('should send all product fields to backend', async () => {
       const newProduct = {
         sku: 'SKU003',
         nombre: 'New Product',
+        descripcion: 'Test Descripcion',
+        categoriaId: 'CAT-VAC-001',
+        subcategoria: 'Vacunas',
+        laboratorio: '',
+        principioActivo: '',
+        concentracion: '',
+        formaFarmaceutica: 'Test',
+        registroSanitario: 'INVIMA 2025M-000123-R1',
+        requierePrescripcion: false,
+        codigoBarras: '',
+        fechaVencimiento: '2026-01-01',
         stock: '0',
         location: 'Bodega 1',
         ubicacion: 'Bogotá D.C.'
@@ -155,10 +205,16 @@ describe('Products API', () => {
         productoId: '3',
         sku: 'SKU003',
         nombre: 'New Product',
-        categoria: 'General',
-        formaFarmaceutica: 'Tableta',
-        requierePrescripcion: 'False',
-        registroSanitario: 'INVIMA-125',
+        descripcion: 'Test Descripcion',
+        categoriaId: 'CAT-VAC-001',
+        subcategoria: 'Vacunas',
+        laboratorio: '',
+        principioActivo: '',
+        concentracion: '',
+        formaFarmaceutica: 'Test',
+        registroSanitario: 'INVIMA 2025M-000123-R1',
+        requierePrescripcion: false,
+        codigoBarras: '',
         estado_producto: 'activo',
         actualizado_en: '2025-11-03T01:00:00',
         fechaVencimiento: '2026-01-01',
@@ -175,10 +231,7 @@ describe('Products API', () => {
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
         `${API_URL}/productos`,
-        {
-          ...newProduct,
-          categoria: 'General'
-        }
+        newProduct
       )
     })
   })

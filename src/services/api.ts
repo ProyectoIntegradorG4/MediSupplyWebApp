@@ -12,15 +12,22 @@ export const productsApi = {
   createProduct: async (productData: {
     sku: string;
     nombre: string;
-    categoria?: string;
+    descripcion: string;
+    categoriaId: string;
+    subcategoria: string;
+    laboratorio: string;
+    principioActivo: string;
+    concentracion: string;
+    formaFarmaceutica: string;
+    registroSanitario: string;
+    requierePrescripcion: boolean;
+    codigoBarras: string;
+    fechaVencimiento: string;
     stock: string;
     location: string;
     ubicacion: string;
   }): Promise<Product> => {
-    const response = await axios.post<Product>(`${API_URL}/productos`, {
-      ...productData,
-      categoria: productData.categoria || 'General'
-    });
+    const response = await axios.post<Product>(`${API_URL}/productos`, productData);
     return response.data;
   },
 

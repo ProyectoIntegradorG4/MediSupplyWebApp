@@ -156,7 +156,7 @@ const Products = () => {
                 <Tr key={product.productoId}>
                   <Td>{product.sku}</Td>
                   <Td>{product.nombre}</Td>
-                  <Td>{product.categoria}</Td>
+                  <Td>{product.subcategoria}</Td>
                   <Td isNumeric>{product.stock}</Td>
                   <Td>{product.location}</Td>
                 </Tr>
