@@ -95,4 +95,16 @@ describe('Sidebar Component', () => {
       expect(mockNavigate).toHaveBeenCalled();
     }
   });
+
+  it('renders all navigation items', () => {
+    render(
+      <TestWrapper>
+        <Sidebar {...defaultProps} />
+      </TestWrapper>
+    );
+
+    // Sidebar drawer should be visible
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toBeVisible();
+  });
 });

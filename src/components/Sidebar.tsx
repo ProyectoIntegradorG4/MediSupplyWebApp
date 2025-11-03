@@ -1,18 +1,12 @@
 import {
   Box,
   VStack,
-  HStack,
-  Text,
   Icon,
   Drawer,
   DrawerBody,
   DrawerOverlay,
   DrawerContent,
-  DrawerCloseButton,
-  useDisclosure,
-  IconButton,
 } from '@chakra-ui/react';
-import { HamburgerIcon } from '@chakra-ui/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   FaHome,
