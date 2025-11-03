@@ -1,16 +1,10 @@
 /// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
   base: '/',
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
-  },
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
@@ -34,5 +28,41 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
     css: true,
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'src/test/',
+        '**/*.test.ts',
+        '**/*.test.tsx',
+        '**/test-utils.tsx',
+        'src/main.tsx',
+        'src/theme.ts',
+        'src/App.tsx',
+        'src/components/Layout.tsx',
+        'src/components/Navbar.tsx',
+        'src/pages/Dashboard.tsx',
+        'src/pages/Providers.tsx',
+        'src/pages/Sellers.tsx',
+        'src/types/**',
+        '**/*.d.ts',
+        'dist/',
+        'coverage/',
+        '**/*.config.ts',
+        '**/*.config.js',
+      ],
+      include: [
+        'src/**/*.ts',
+        'src/**/*.tsx',
+      ],
+      all: true,
+      thresholds: {
+        lines: 90,
+        functions: 75,
+        branches: 85,
+        statements: 90,
+      },
+    },
   },
 })
