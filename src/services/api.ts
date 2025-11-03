@@ -55,7 +55,12 @@ export const providersApi = {
   },
 
   createProvider: async (provider: Omit<Provider, 'proveedor_id' | 'created_at' | 'updated_at' | 'version'>): Promise<Provider> => {
-    const response = await axios.post<Provider>(`${API_URL}/proveedores/`, provider);
+    const response = await axios.post<Provider>(`${API_URL}/proveedores/`, provider, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Idempotency-Key': 'Administrador de Compras',
+      },
+    });
     return response.data;
   },
 };

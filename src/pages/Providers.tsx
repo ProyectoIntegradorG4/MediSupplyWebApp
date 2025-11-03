@@ -27,10 +27,12 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { providersApi } from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import ProviderCreateModal from '../components/ProviderCreateModal';
 
 const Providers = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState('10');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const { data: providers, isLoading, isError } = useQuery({
@@ -85,7 +87,10 @@ const Providers = () => {
             </InputGroup>
           </Box>
           <HStack>
-            <Button colorScheme="blue">
+            <Button
+              colorScheme="blue"
+              onClick={() => setIsCreateModalOpen(true)}
+            >
               AGREGAR PROVEEDOR
             </Button>
           </HStack>
@@ -159,6 +164,11 @@ const Providers = () => {
           1-{displayCount} of {totalProviders}
         </Text>
       </HStack>
+
+      <ProviderCreateModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
     </Container>
   );
 };

@@ -129,7 +129,13 @@ describe('Providers API', () => {
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
         `${API_URL}/proveedores/`,
-        newProvider
+        newProvider,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Idempotency-Key': 'Administrador de Compras',
+          },
+        }
       )
       expect(result).toEqual(createdProvider)
     })
