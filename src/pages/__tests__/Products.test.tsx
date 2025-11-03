@@ -11,26 +11,50 @@ vi.mock('../../services/api', () => ({
   productsApi: {
     getProducts: vi.fn(() => Promise.resolve([
       {
+        productoId: '1',
         sku: 'SKU001',
-        name: 'Test Product 1',
-        category: 'General',
-        stock: 10,
-        location: 'Bodega 1'
+        nombre: 'Test Product 1',
+        categoria: 'General',
+        formaFarmaceutica: 'Tableta',
+        requierePrescripcion: 'False',
+        registroSanitario: 'INVIMA-123',
+        estado_producto: 'activo',
+        actualizado_en: '2025-11-03T01:00:00',
+        fechaVencimiento: '2026-01-01',
+        stock: '10',
+        location: 'Bodega 1',
+        ubicacion: 'Bogotá D.C.'
       },
       {
-        sku: 'SKU002', 
-        name: 'Test Product 2',
-        category: 'General',
-        stock: 5,
-        location: 'Bodega 2'
+        productoId: '2',
+        sku: 'SKU002',
+        nombre: 'Test Product 2',
+        categoria: 'General',
+        formaFarmaceutica: 'Tableta',
+        requierePrescripcion: 'False',
+        registroSanitario: 'INVIMA-124',
+        estado_producto: 'activo',
+        actualizado_en: '2025-11-03T01:00:00',
+        fechaVencimiento: '2026-01-01',
+        stock: '5',
+        location: 'Bodega 2',
+        ubicacion: 'Medellín'
       }
     ])),
     createProduct: vi.fn(() => Promise.resolve({
+      productoId: '3',
       sku: 'SKU003',
-      name: 'New Product',
-      category: 'General',
-      stock: 0,
-      location: 'Bodega 1'
+      nombre: 'New Product',
+      categoria: 'General',
+      formaFarmaceutica: 'Tableta',
+      requierePrescripcion: 'False',
+      registroSanitario: 'INVIMA-125',
+      estado_producto: 'activo',
+      actualizado_en: '2025-11-03T01:00:00',
+      fechaVencimiento: '2026-01-01',
+      stock: '0',
+      location: 'Bodega 1',
+      ubicacion: 'Bogotá D.C.'
     }))
   }
 }))
