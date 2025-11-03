@@ -39,7 +39,7 @@ const Providers = () => {
   });
 
   const filteredProviders = (providers || []).filter(provider =>
-    provider.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+    provider.razon_social.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const displayedProviders = filteredProviders.slice(0, parseInt(rowsPerPage));
@@ -96,11 +96,11 @@ const Providers = () => {
         <Table variant="simple">
           <Thead>
             <Tr bg="gray.50">
-              <Th>ID</Th>
-              <Th>Nombre</Th>
-              <Th>País</Th>
-              <Th>Rating</Th>
-              <Th>Activo</Th>
+              <Th>NIT</Th>
+              <Th>Razón Social</Th>
+              <Th>Ciudad</Th>
+              <Th>Tipo</Th>
+              <Th>Estado</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -130,12 +130,12 @@ const Providers = () => {
               </Tr>
             ) : (
               displayedProviders.map((provider, index) => (
-                <Tr key={provider.id} bg={index % 2 === 1 ? 'gray.50' : 'white'}>
-                  <Td>{provider.id}</Td>
-                  <Td>{provider.nombre}</Td>
-                  <Td>{provider.pais}</Td>
-                  <Td>{provider.rating.toFixed(1)}</Td>
-                  <Td>{provider.activo ? 'Sí' : 'No'}</Td>
+                <Tr key={provider.proveedor_id} bg={index % 2 === 1 ? 'gray.50' : 'white'}>
+                  <Td>{provider.nit}</Td>
+                  <Td>{provider.razon_social}</Td>
+                  <Td>{provider.ciudad}</Td>
+                  <Td>{provider.tipo_proveedor}</Td>
+                  <Td>{provider.estado}</Td>
                 </Tr>
               ))
             )}

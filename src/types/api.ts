@@ -21,11 +21,23 @@ export interface Product {
 }
 
 export interface Provider {
-  id: number;
-  nombre: string;
+  proveedor_id: string;
+  razon_social: string;
+  nit: string;
+  tipo_proveedor: string;
+  email: string;
+  telefono: string;
+  direccion: string;
+  ciudad: string;
   pais: string;
-  rating: number;
-  activo: boolean;
+  certificaciones: string[];
+  estado: string;
+  validacion_regulatoria: string;
+  calificacion: number | null;
+  tiempo_entrega_promedio: number | null;
+  created_at: string;
+  updated_at: string;
+  version: number;
 }
 
 export interface ApiResponse<T> {
@@ -39,4 +51,11 @@ export interface PaginatedResponse<T> {
   items: T[];
   page: number;
   page_size: number;
+}
+
+export interface ProviderPaginatedResponse {
+  total: number;
+  skip: number;
+  limit: number;
+  data: Provider[];
 }
