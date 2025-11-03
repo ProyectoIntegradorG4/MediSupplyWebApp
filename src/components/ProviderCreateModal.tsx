@@ -149,7 +149,7 @@ const ProviderCreateModal = ({ isOpen, onClose }: ProviderCreateModalProps) => {
                   }
                 >
                   <option value="distribuidor">Distribuidor</option>
-                  <option value="fabricante">Fabricante</option>
+                  <option value="laboratorio">Laboratorio</option>
                   <option value="importador">Importador</option>
                 </Select>
               </FormControl>

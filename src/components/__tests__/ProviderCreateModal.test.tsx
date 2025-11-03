@@ -237,8 +237,8 @@ describe('ProviderCreateModal Component', () => {
 
     const tipoSelect = screen.getByLabelText(/Tipo de Proveedor/i) as HTMLSelectElement;
 
-    fireEvent.change(tipoSelect, { target: { value: 'fabricante' } });
-    expect(tipoSelect.value).toBe('fabricante');
+    fireEvent.change(tipoSelect, { target: { value: 'laboratorio' } });
+    expect(tipoSelect.value).toBe('laboratorio');
   });
 
   it('allows changing país select', () => {

@@ -1,5 +1,6 @@
-import { Box, Container } from '@chakra-ui/react'
+import { Box, Flex } from '@chakra-ui/react'
 import Navbar from './Navbar'
+import Sidebar from './Sidebar'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -7,12 +8,15 @@ interface LayoutProps {
 
 function Layout({ children }: LayoutProps) {
   return (
-    <Box>
-      <Navbar />
-      <Container maxW="container.xl" py={6}>
-        {children}
-      </Container>
-    </Box>
+    <Flex minHeight="100vh">
+      <Sidebar />
+      <Box flex="1" ml={{ base: 0, md: '240px' }}>
+        <Navbar />
+        <Box p={6}>
+          {children}
+        </Box>
+      </Box>
+    </Flex>
   )
 }
 

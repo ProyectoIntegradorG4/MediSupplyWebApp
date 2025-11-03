@@ -40,7 +40,7 @@ describe('Providers API', () => {
           proveedor_id: 'c1868c58-9f91-4ba6-9faf-41a19fe3e8dd',
           razon_social: 'Farmacéutica del Sur Ltda.',
           nit: '900234567-8',
-          tipo_proveedor: 'fabricante',
+          tipo_proveedor: 'laboratorio',
           email: 'contacto@farmasur.com',
           telefono: '+57 2 345 6789',
           direccion: 'Carrera 50 #20-30',
