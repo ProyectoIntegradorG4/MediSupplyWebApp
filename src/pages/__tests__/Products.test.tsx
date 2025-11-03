@@ -130,9 +130,13 @@ describe('Products Component', () => {
     // Check table headers
     expect(screen.getByText('SKU')).toBeInTheDocument()
     expect(screen.getByText('Name')).toBeInTheDocument()
-    expect(screen.getByText('Category')).toBeInTheDocument()
+    expect(screen.getByText('Ubicación')).toBeInTheDocument()
     expect(screen.getByText('Stock')).toBeInTheDocument()
     expect(screen.getByText('Location')).toBeInTheDocument()
+
+    // Check that ubicacion data is displayed
+    expect(screen.getByText('Bogotá D.C.')).toBeInTheDocument()
+    expect(screen.getByText('Medellín')).toBeInTheDocument()
   })
 
   it('filters products by SKU search', async () => {
