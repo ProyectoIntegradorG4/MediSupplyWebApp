@@ -150,7 +150,12 @@ describe('Products API', () => {
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
         `${API_URL}/productos`,
-        newProduct
+        newProduct,
+        {
+          headers: {
+            'X-User-Role': 'Administrador de Compras',
+          },
+        }
       )
       expect(result).toEqual(createdProduct)
     })
@@ -231,7 +236,12 @@ describe('Products API', () => {
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
         `${API_URL}/productos`,
-        newProduct
+        newProduct,
+        {
+          headers: {
+            'X-User-Role': 'Administrador de Compras',
+          },
+        }
       )
     })
   })
