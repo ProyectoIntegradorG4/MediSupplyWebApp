@@ -1,4 +1,4 @@
-import { Box, Flex } from '@chakra-ui/react'
+import { Box, useDisclosure } from '@chakra-ui/react'
 import Navbar from './Navbar'
 import Sidebar from './Sidebar'
 
@@ -7,16 +7,16 @@ interface LayoutProps {
 }
 
 function Layout({ children }: LayoutProps) {
+  const { isOpen, onOpen, onClose } = useDisclosure()
+
   return (
-    <Flex minHeight="100vh">
-      <Sidebar />
-      <Box flex="1" ml={{ base: 0, md: '240px' }}>
-        <Navbar />
-        <Box p={6}>
-          {children}
-        </Box>
+    <Box minHeight="100vh">
+      <Navbar onMenuClick={onOpen} />
+      <Sidebar isOpen={isOpen} onClose={onClose} />
+      <Box p={6}>
+        {children}
       </Box>
-    </Flex>
+    </Box>
   )
 }
 
