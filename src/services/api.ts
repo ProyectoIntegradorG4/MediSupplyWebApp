@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { Product, Provider, PaginatedResponse, ProviderPaginatedResponse } from '../types/api';
+import { Product, Provider, PaginatedResponse, ProviderPaginatedResponse, User, SalesPlan, UsersPaginatedResponse, SalesPlansPaginatedResponse, Salesman, SalesmanPaginatedResponse, CreateSalesmanRequest } from '../types/api';
+import { mockSellers, mockSalesPlans } from '../mocks';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
@@ -59,6 +60,56 @@ export const providersApi = {
       headers: {
         'Content-Type': 'application/json',
         'X-Idempotency-Key': 'Administrador de Compras',
+      },
+    });
+    return response.data;
+  },
+};
+
+export const usersApi = {
+  getUsers: async (): Promise<User[]> => {
+    try {
+      const response = await axios.get<UsersPaginatedResponse>(`${API_URL}/users`);
+      const users = response?.data?.items;
+      if (!Array.isArray(users) || users.length === 0) {
+        console.warn('No users found from API, using mock data');
+        return mockSellers;
+      }
+      return users;
+    } catch (error) {
+      console.error('Error fetching users, using mock data:', error);
+      return mockSellers;
+    }
+  },
+};
+
+export const salesPlansApi = {
+  getSalesPlans: async (): Promise<SalesPlan[]> => {
+    try {
+      const response = await axios.get<SalesPlansPaginatedResponse>(`${API_URL}/ventas`);
+      const plans = response?.data?.items;
+      if (!Array.isArray(plans) || plans.length === 0) {
+        console.warn('No sales plans found from API, using mock data');
+        return mockSalesPlans;
+      }
+      return plans;
+    } catch (error) {
+      console.error('Error fetching sales plans, using mock data:', error);
+      return mockSalesPlans;
+    }
+  },
+};
+
+export const salesmenApi = {
+  getSalesmen: async (): Promise<Salesman[]> => {
+    const response = await axios.get<SalesmanPaginatedResponse>(`${API_URL}/vendedores`);
+    return response.data.items;
+  },
+
+  createSalesman: async (salesmanData: CreateSalesmanRequest): Promise<Salesman> => {
+    const response = await axios.post<Salesman>(`${API_URL}/vendedores`, salesmanData, {
+      headers: {
+        'Content-Type': 'application/json',
       },
     });
     return response.data;

@@ -2,6 +2,7 @@ import {
   Box,
   VStack,
   Icon,
+  Text,
   Drawer,
   DrawerBody,
   DrawerOverlay,
@@ -53,20 +54,29 @@ const SidebarContent = ({ onClose }: SidebarContentProps) => {
           <Box
             key={item.path}
             py={5}
+            px={6}
             cursor="pointer"
             bg={isActive ? 'gray.100' : 'transparent'}
             _hover={{ bg: 'gray.50' }}
             onClick={() => handleNavigation(item.path)}
             transition="background 0.2s"
             display="flex"
-            justifyContent="center"
+            flexDirection="row"
             alignItems="center"
+            gap={6}
           >
             <Icon
               as={item.icon}
               boxSize={6}
               color={isActive ? 'black' : 'gray.600'}
             />
+            <Text
+              fontSize="sm"
+              fontWeight={isActive ? 'semibold' : 'normal'}
+              color={isActive ? 'black' : 'gray.600'}
+            >
+              {item.name}
+            </Text>
           </Box>
         );
       })}
@@ -83,7 +93,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   return (
     <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
       <DrawerOverlay />
-      <DrawerContent maxW="80px">
+      <DrawerContent maxW="200px">
         <DrawerBody p={0}>
           <SidebarContent onClose={onClose} />
         </DrawerBody>

@@ -59,3 +59,65 @@ export interface ProviderPaginatedResponse {
   limit: number;
   data: Provider[];
 }
+
+export interface User {
+  id: number;
+  nombre: string;
+  pais: string;
+  metaDeVentas: number;
+  rendimiento: string;
+}
+
+export interface SalesPlan {
+  id: number;
+  nombre: string;
+  periodo: string;
+  estado: string;
+  cantidad: number;
+}
+
+export interface UsersPaginatedResponse {
+  total: number;
+  items: User[];
+  page: number;
+  page_size: number;
+}
+
+export interface SalesPlansPaginatedResponse {
+  total: number;
+  items: SalesPlan[];
+  page: number;
+  page_size: number;
+}
+
+export interface Salesman {
+  vendedorId: string;
+  nombres: string;
+  apellidos: string;
+  tipoDocumento: string;
+  numeroDocumento: string;
+  email: string;
+  pais: string;
+  territorio: string | null;
+  territorioId: string;
+  estado: string;
+  actualizado_en: string;
+}
+
+export interface CreateSalesmanRequest {
+  nombres: string;
+  apellidos: string;
+  tipoDocumento: string;
+  numeroDocumento: string;
+  email: string;
+  telefono: string;
+  pais: string;
+  territorioId: string;
+}
+
+export interface SalesmanPaginatedResponse {
+  total: number;
+  items: Salesman[];
+  page: number;
+  page_size: number;
+}
