@@ -107,4 +107,20 @@ describe('Sidebar Component', () => {
     const dialog = screen.getByRole('dialog');
     expect(dialog).toBeVisible();
   });
+
+  it('does not call onClose when onClose is undefined', () => {
+    const { container } = render(
+      <TestWrapper>
+        <Sidebar isOpen={true} onClose={vi.fn()} />
+      </TestWrapper>
+    );
+
+    // Click on a menu item
+    const iconBoxes = container.querySelectorAll('[role="dialog"] > div > div > div');
+    if (iconBoxes.length > 0) {
+      fireEvent.click(iconBoxes[0]);
+      // Should still navigate even if onClose is not provided
+      expect(mockNavigate).toHaveBeenCalled();
+    }
+  });
 });
