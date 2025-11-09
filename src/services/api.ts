@@ -36,14 +36,15 @@ export const productsApi = {
     return response.data;
   },
 
-  uploadProductsCsv: async (file: File, createdBy: string): Promise<void> => {
+  uploadProductsCsv: async (file: File): Promise<void> => {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('created_by', createdBy);
 
-    await axios.post(`${API_URL}/productos/upload-csv`, formData, {
+    await axios.post(`${API_URL}/cargamasiva/import-products`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
+        'Authorization': 'Bearer test-token',
+        'x-user-role': 'gerente_cuenta',
       },
     });
   },

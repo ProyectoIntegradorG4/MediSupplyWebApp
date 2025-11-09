@@ -57,7 +57,7 @@ const FileUploadModal = ({ isOpen, onClose, onUploadSuccess }: FileUploadModalPr
 
     setIsUploading(true);
     try {
-      await productsApi.uploadProductsCsv(selectedFile, 'user123'); // TODO: Replace with actual user
+      await productsApi.uploadProductsCsv(selectedFile);
 
       toast({
         title: 'Éxito',

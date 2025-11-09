@@ -120,7 +120,7 @@ describe('FileUploadModal Component', () => {
     fireEvent.click(acceptButton)
 
     await waitFor(() => {
-      expect(mockUpload).toHaveBeenCalledWith(file, 'user123')
+      expect(mockUpload).toHaveBeenCalledWith(file)
       expect(defaultProps.onUploadSuccess).toHaveBeenCalled()
       expect(defaultProps.onClose).toHaveBeenCalled()
     })
