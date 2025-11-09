@@ -250,18 +250,19 @@ describe('Products API', () => {
   describe('uploadProductsCsv', () => {
     it('should upload CSV file successfully', async () => {
       const mockFile = new File(['test content'], 'products.csv', { type: 'text/csv' })
-      const createdBy = 'admin@example.com'
 
       mockedAxios.post.mockResolvedValueOnce({ data: {} })
 
-      await productsApi.uploadProductsCsv(mockFile, createdBy)
+      await productsApi.uploadProductsCsv(mockFile)
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        `${API_URL}/productos/upload-csv`,
+        `${API_URL}/cargamasiva/import-products`,
         expect.any(FormData),
         {
           headers: {
             'Content-Type': 'multipart/form-data',
+            'Authorization': 'Bearer test-token',
+            'x-user-role': 'gerente_cuenta',
           },
         }
       )
@@ -269,17 +270,15 @@ describe('Products API', () => {
       // Verify FormData contents
       const formData = mockedAxios.post.mock.calls[0][1] as FormData
       expect(formData.get('file')).toBe(mockFile)
-      expect(formData.get('created_by')).toBe(createdBy)
     })
 
     it('should handle upload errors', async () => {
       const mockFile = new File(['test content'], 'products.csv', { type: 'text/csv' })
-      const createdBy = 'admin@example.com'
       const errorMessage = 'Upload failed'
 
       mockedAxios.post.mockRejectedValueOnce(new Error(errorMessage))
 
-      await expect(productsApi.uploadProductsCsv(mockFile, createdBy)).rejects.toThrow(errorMessage)
+      await expect(productsApi.uploadProductsCsv(mockFile)).rejects.toThrow(errorMessage)
     })
   })
 })
