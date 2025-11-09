@@ -204,4 +204,126 @@ describe('Products Component', () => {
 
     expect(screen.getByText('Loading...')).toBeInTheDocument()
   })
+
+  it('filters products by location', async () => {
+    render(
+      <TestWrapper>
+        <Products />
+      </TestWrapper>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('SKU001')).toBeInTheDocument()
+    })
+
+    const locationInput = screen.getByPlaceholderText('Location')
+    fireEvent.change(locationInput, { target: { value: 'Bodega 1' } })
+
+    await waitFor(() => {
+      expect(screen.getByText('SKU001')).toBeInTheDocument()
+      expect(screen.queryByText('SKU002')).not.toBeInTheDocument()
+    })
+  })
+
+  it('changes rows per page', async () => {
+    // Mock more products to test pagination
+    const mockGetProducts = vi.mocked(productsApi.getProducts)
+    mockGetProducts.mockImplementationOnce(() => Promise.resolve(
+      Array.from({ length: 15 }, (_, i) => ({
+        productoId: `${i + 1}`,
+        sku: `SKU${String(i + 1).padStart(3, '0')}`,
+        nombre: `Test Product ${i + 1}`,
+        descripcion: 'Test Descripcion',
+        categoriaId: 'CAT-VAC-001',
+        subcategoria: 'Vacunas',
+        laboratorio: '',
+        principioActivo: '',
+        concentracion: '',
+        formaFarmaceutica: 'Tableta',
+        registroSanitario: `INVIMA-${i + 1}`,
+        requierePrescripcion: false,
+        codigoBarras: '',
+        estado_producto: 'activo',
+        actualizado_en: '2025-11-03T01:00:00',
+        fechaVencimiento: '2026-01-01',
+        stock: '10',
+        location: 'Bodega 1',
+        ubicacion: 'Bogotá D.C.'
+      }))
+    ))
+
+    render(
+      <TestWrapper>
+        <Products />
+      </TestWrapper>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('SKU001')).toBeInTheDocument()
+    })
+
+    const rowsPerPageSelect = screen.getByDisplayValue('10')
+    fireEvent.change(rowsPerPageSelect, { target: { value: '5' } })
+
+    await waitFor(() => {
+      expect(screen.getByText(/1-5 of 15/)).toBeInTheDocument()
+    })
+  })
+
+  it('navigates between pages', async () => {
+    // Mock more products to test pagination
+    const mockGetProducts = vi.mocked(productsApi.getProducts)
+    mockGetProducts.mockImplementationOnce(() => Promise.resolve(
+      Array.from({ length: 15 }, (_, i) => ({
+        productoId: `${i + 1}`,
+        sku: `SKU${String(i + 1).padStart(3, '0')}`,
+        nombre: `Test Product ${i + 1}`,
+        descripcion: 'Test Descripcion',
+        categoriaId: 'CAT-VAC-001',
+        subcategoria: 'Vacunas',
+        laboratorio: '',
+        principioActivo: '',
+        concentracion: '',
+        formaFarmaceutica: 'Tableta',
+        registroSanitario: `INVIMA-${i + 1}`,
+        requierePrescripcion: false,
+        codigoBarras: '',
+        estado_producto: 'activo',
+        actualizado_en: '2025-11-03T01:00:00',
+        fechaVencimiento: '2026-01-01',
+        stock: '10',
+        location: 'Bodega 1',
+        ubicacion: 'Bogotá D.C.'
+      }))
+    ))
+
+    render(
+      <TestWrapper>
+        <Products />
+      </TestWrapper>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('SKU001')).toBeInTheDocument()
+    })
+
+    // Check initial page
+    expect(screen.getByText(/Page 1 of 2/)).toBeInTheDocument()
+
+    // Click next page button
+    const nextButton = screen.getByLabelText('Next page')
+    fireEvent.click(nextButton)
+
+    await waitFor(() => {
+      expect(screen.getByText(/Page 2 of 2/)).toBeInTheDocument()
+    })
+
+    // Click previous page button
+    const prevButton = screen.getByLabelText('Previous page')
+    fireEvent.click(prevButton)
+
+    await waitFor(() => {
+      expect(screen.getByText(/Page 1 of 2/)).toBeInTheDocument()
+    })
+  })
 })
