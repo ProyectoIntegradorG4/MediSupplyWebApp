@@ -19,21 +19,25 @@ import {
   TabList,
   Tab,
   TabIndicator,
+  Spinner,
+  Center,
+  IconButton,
 } from '@chakra-ui/react';
-import { SearchIcon } from '@chakra-ui/icons';
+import { SearchIcon, ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import FileUploadModal from '../components/FileUploadModal';
 import ProductCreateModal from '../components/ProductCreateModal';
 import { productsApi } from '../services/api';
-import { Spinner, Center } from '@chakra-ui/react';
 
 const Products = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
+  const [locationFilter, setLocationFilter] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState('10');
+  const [currentPage, setCurrentPage] = useState(1);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
@@ -46,9 +50,26 @@ const Products = () => {
     queryClient.invalidateQueries({ queryKey: ['products'] });
   };
 
-  const filteredProducts = (products || []).filter(product =>
-    product.sku.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredProducts = (products || []).filter(product => {
+    const matchesSku = product.sku.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesLocation = locationFilter === '' || product.location.toLowerCase().includes(locationFilter.toLowerCase());
+    return matchesSku && matchesLocation;
+  });
+
+  const itemsPerPage = parseInt(rowsPerPage);
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const displayedProducts = filteredProducts.slice(startIndex, endIndex);
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
+  const handleRowsPerPageChange = (newRowsPerPage: string) => {
+    setRowsPerPage(newRowsPerPage);
+    setCurrentPage(1);
+  };
 
   return (
     <Container maxW="container.xl" py={8}>
@@ -76,21 +97,35 @@ const Products = () => {
           />
         </Tabs>
         <HStack spacing={4} justify="space-between">
-          <Box w="300px">
-            <InputGroup>
-              <InputLeftElement pointerEvents="none">
-                <SearchIcon color="gray.300" />
-              </InputLeftElement>
-              <Input
-                placeholder="SKU"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </InputGroup>
-          </Box>
+          <HStack spacing={4}>
+            <Box w="250px">
+              <InputGroup>
+                <InputLeftElement pointerEvents="none">
+                  <SearchIcon color="gray.300" />
+                </InputLeftElement>
+                <Input
+                  placeholder="SKU"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </InputGroup>
+            </Box>
+            <Box w="250px">
+              <InputGroup>
+                <InputLeftElement pointerEvents="none">
+                  <SearchIcon color="gray.300" />
+                </InputLeftElement>
+                <Input
+                  placeholder="Location"
+                  value={locationFilter}
+                  onChange={(e) => setLocationFilter(e.target.value)}
+                />
+              </InputGroup>
+            </Box>
+          </HStack>
           <HStack>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
                 setIsCreateModalOpen(true);
               }}
@@ -143,7 +178,7 @@ const Products = () => {
                   </Center>
                 </Td>
               </Tr>
-            ) : filteredProducts.length === 0 ? (
+            ) : displayedProducts.length === 0 ? (
               <Tr>
                 <Td colSpan={5}>
                   <Center py={4}>
@@ -152,8 +187,8 @@ const Products = () => {
                 </Td>
               </Tr>
             ) : (
-              filteredProducts.map((product) => (
-                <Tr key={product.productoId}>
+              displayedProducts.map((product, index) => (
+                <Tr key={product.productoId} bg={index % 2 === 1 ? 'gray.50' : 'white'}>
                   <Td>{product.sku}</Td>
                   <Td>{product.nombre}</Td>
                   <Td>{product.ubicacion}</Td>
@@ -166,18 +201,42 @@ const Products = () => {
         </Table>
       </Box>
 
-      <HStack spacing={4} justify="flex-end" mt={4}>
-        <Text>Rows per page:</Text>
-        <Select
-          value={rowsPerPage}
-          onChange={(e) => setRowsPerPage(e.target.value)}
-          w="70px"
-        >
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="20">20</option>
-        </Select>
-        <Text>1-5 of 13</Text>
+      <HStack spacing={4} justify="space-between" mt={4}>
+        <HStack spacing={2}>
+          <IconButton
+            aria-label="Previous page"
+            icon={<ChevronLeftIcon />}
+            onClick={() => handlePageChange(currentPage - 1)}
+            isDisabled={currentPage === 1}
+            size="sm"
+          />
+          <Text fontSize="sm" color="gray.600">
+            Page {currentPage} of {totalPages || 1}
+          </Text>
+          <IconButton
+            aria-label="Next page"
+            icon={<ChevronRightIcon />}
+            onClick={() => handlePageChange(currentPage + 1)}
+            isDisabled={currentPage >= totalPages}
+            size="sm"
+          />
+        </HStack>
+        <HStack spacing={4}>
+          <Text fontSize="sm" color="gray.600">Rows per page:</Text>
+          <Select
+            value={rowsPerPage}
+            onChange={(e) => handleRowsPerPageChange(e.target.value)}
+            w="70px"
+            size="sm"
+          >
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+          </Select>
+          <Text fontSize="sm" color="gray.600">
+            {startIndex + 1}-{Math.min(endIndex, filteredProducts.length)} of {filteredProducts.length}
+          </Text>
+        </HStack>
       </HStack>
     </Container>
   );
