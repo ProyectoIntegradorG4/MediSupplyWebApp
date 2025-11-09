@@ -64,7 +64,8 @@ jobs:
         cache: 'npm'
         
     - name: Instalar dependencias
-      run: npm ci
+      run: |
+        npm ci || (rm -rf node_modules package-lock.json && npm install)
       
     - name: Verificación de tipos
       run: npm run type-check
