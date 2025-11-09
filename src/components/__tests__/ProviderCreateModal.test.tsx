@@ -145,7 +145,9 @@ describe('ProviderCreateModal Component', () => {
     fireEvent.click(acceptButton);
 
     await waitFor(() => {
-      expect(mockCreate).toHaveBeenCalledWith({
+      expect(mockCreate).toHaveBeenCalledOnce();
+      const callArgs = mockCreate.mock.calls[0][0];
+      expect(callArgs).toEqual({
         razon_social: 'Test Provider',
         nit: '123456789',
         tipo_proveedor: 'distribuidor',
