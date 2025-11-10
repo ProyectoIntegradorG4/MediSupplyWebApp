@@ -9,6 +9,7 @@ import {
   DrawerContent,
 } from '@chakra-ui/react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   FaHome,
   FaBoxes,
@@ -19,18 +20,18 @@ import {
 } from 'react-icons/fa';
 
 interface NavItem {
-  name: string;
+  nameKey: string;
   path: string;
   icon: typeof FaHome;
 }
 
 const navItems: NavItem[] = [
-  { name: 'Home', path: '/dashboard', icon: FaHome },
-  { name: 'Inventory', path: '/products', icon: FaBoxes },
-  { name: 'Delivery', path: '/delivery', icon: FaTruck },
-  { name: 'People', path: '/people', icon: FaUsers },
-  { name: 'Supplies', path: '/providers', icon: FaWarehouse },
-  { name: 'Reports', path: '/reports', icon: FaChartBar },
+  { nameKey: 'nav.dashboard', path: '/dashboard', icon: FaHome },
+  { nameKey: 'nav.products', path: '/products', icon: FaBoxes },
+  { nameKey: 'nav.delivery', path: '/delivery', icon: FaTruck },
+  { nameKey: 'nav.people', path: '/people', icon: FaUsers },
+  { nameKey: 'nav.providers', path: '/providers', icon: FaWarehouse },
+  { nameKey: 'nav.reports', path: '/reports', icon: FaChartBar },
 ];
 
 interface SidebarContentProps {
@@ -38,6 +39,7 @@ interface SidebarContentProps {
 }
 
 const SidebarContent = ({ onClose }: SidebarContentProps) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -75,7 +77,7 @@ const SidebarContent = ({ onClose }: SidebarContentProps) => {
               fontWeight={isActive ? 'semibold' : 'normal'}
               color={isActive ? 'black' : 'gray.600'}
             >
-              {item.name}
+              {t(item.nameKey)}
             </Text>
           </Box>
         );

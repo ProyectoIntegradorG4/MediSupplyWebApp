@@ -25,11 +25,13 @@ import {
 import { SearchIcon } from '@chakra-ui/icons';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { providersApi } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import ProviderCreateModal from '../components/ProviderCreateModal';
 
 const Providers = () => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState('10');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -51,19 +53,19 @@ const Providers = () => {
   return (
     <Container maxW="container.xl" py={8}>
       <Box mb={8}>
-        <Heading size="lg" mb={6}>Proveedores y Productos</Heading>
+        <Heading size="lg" mb={6}>{t('providers.title')}</Heading>
         <Tabs position="relative" variant="unstyled" mb={6} defaultIndex={0}>
           <TabList>
             <Tab _selected={{ color: 'blue.500', fontWeight: 'bold' }}>
               <Box as="span" mr={2}>★</Box>
-              PROVEEDORES
+              {t('nav.providers').toUpperCase()}
             </Tab>
             <Tab
               _selected={{ color: 'blue.500', fontWeight: 'bold' }}
               onClick={() => navigate('/products')}
             >
               <Box as="span" mr={2}>☆</Box>
-              PRODUCTOS
+              {t('nav.products').toUpperCase()}
             </Tab>
           </TabList>
           <TabIndicator
@@ -80,7 +82,7 @@ const Providers = () => {
                 <SearchIcon color="gray.300" />
               </InputLeftElement>
               <Input
-                placeholder="Nombre"
+                placeholder={t('providers.businessName')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -91,7 +93,7 @@ const Providers = () => {
               colorScheme="blue"
               onClick={() => setIsCreateModalOpen(true)}
             >
-              AGREGAR PROVEEDOR
+              {t('providers.createProvider').toUpperCase()}
             </Button>
           </HStack>
         </HStack>
@@ -101,11 +103,11 @@ const Providers = () => {
         <Table variant="simple">
           <Thead>
             <Tr bg="gray.50">
-              <Th>NIT</Th>
-              <Th>Razón Social</Th>
-              <Th>Ciudad</Th>
-              <Th>Tipo</Th>
-              <Th>Estado</Th>
+              <Th>{t('providers.nit').toUpperCase()}</Th>
+              <Th>{t('providers.businessName').toUpperCase()}</Th>
+              <Th>{t('providers.city').toUpperCase()}</Th>
+              <Th>{t('providers.providerType').toUpperCase()}</Th>
+              <Th>{t('providers.status').toUpperCase()}</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -121,7 +123,7 @@ const Providers = () => {
               <Tr>
                 <Td colSpan={5}>
                   <Center py={4}>
-                    <Text color="red.500">Error loading providers. Please try again later.</Text>
+                    <Text color="red.500">{t('providers.createError')}</Text>
                   </Center>
                 </Td>
               </Tr>
@@ -129,7 +131,7 @@ const Providers = () => {
               <Tr>
                 <Td colSpan={5}>
                   <Center py={4}>
-                    <Text color="gray.500">No providers found</Text>
+                    <Text color="gray.500">{t('providers.noProviders')}</Text>
                   </Center>
                 </Td>
               </Tr>
@@ -149,7 +151,7 @@ const Providers = () => {
       </Box>
 
       <HStack spacing={4} justify="flex-end" mt={4}>
-        <Text fontSize="sm" color="gray.600">Rows per page:</Text>
+        <Text fontSize="sm" color="gray.600">{t('common.search')}:</Text>
         <Select
           value={rowsPerPage}
           onChange={(e) => setRowsPerPage(e.target.value)}

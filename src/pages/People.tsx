@@ -31,11 +31,13 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { salesmenApi, salesPlansApi } from '../services/api';
 import { Spinner, Center } from '@chakra-ui/react';
 
 const People = () => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -71,8 +73,8 @@ const People = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['salesmen'] });
       toast({
-        title: 'Vendedor creado',
-        description: 'El vendedor ha sido creado exitosamente.',
+        title: t('people.sellerCreated'),
+        description: t('people.sellerCreatedSuccess'),
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -91,8 +93,8 @@ const People = () => {
     },
     onError: (error: any) => {
       toast({
-        title: 'Error',
-        description: error.response?.data?.detail || 'Error al crear el vendedor',
+        title: t('people.error'),
+        description: error.response?.data?.detail || t('people.createSellerError'),
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -130,7 +132,7 @@ const People = () => {
     <Container maxW="container.xl" py={8}>
       <Box mb={8}>
         <Heading size="lg" mb={6}>
-          {activeTab === 0 ? 'Información de Planes de Ventas' : 'Información de Vendedores'}
+          {activeTab === 0 ? t('people.salesPlansInfo') : t('people.sellersInfo')}
         </Heading>
 
         <Tabs
@@ -143,11 +145,11 @@ const People = () => {
           <TabList>
             <Tab _selected={{ color: 'blue.500', fontWeight: 'bold' }}>
               <Box as="span" mr={2}>{activeTab === 0 ? '★' : '☆'}</Box>
-              PLANES DE VENTA
+              {t('people.salesPlansTab')}
             </Tab>
             <Tab _selected={{ color: 'blue.500', fontWeight: 'bold' }}>
               <Box as="span" mr={2}>{activeTab === 1 ? '★' : '☆'}</Box>
-              VENDEDORES
+              {t('people.sellersTab')}
             </Tab>
           </TabList>
           <TabIndicator
@@ -161,9 +163,9 @@ const People = () => {
         {activeTab === 0 ? (
           <HStack spacing={4} mb={6} align="flex-end">
             <Box>
-              <Text mb={2} fontSize="sm" color="gray.600">Buscar</Text>
+              <Text mb={2} fontSize="sm" color="gray.600">{t('people.search')}</Text>
               <Input
-                placeholder="Nombre"
+                placeholder={t('people.name')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 w="300px"
@@ -171,7 +173,7 @@ const People = () => {
             </Box>
 
             <Box>
-              <Text mb={2} fontSize="sm" color="gray.600">Start date</Text>
+              <Text mb={2} fontSize="sm" color="gray.600">{t('people.startDate')}</Text>
               <Input
                 type="date"
                 placeholder="MM/DD/YYYY"
@@ -186,7 +188,7 @@ const People = () => {
             </Box>
 
             <Box>
-              <Text mb={2} fontSize="sm" color="gray.600">End date</Text>
+              <Text mb={2} fontSize="sm" color="gray.600">{t('people.endDate')}</Text>
               <Input
                 type="date"
                 placeholder="MM/DD/YYYY"
@@ -197,22 +199,22 @@ const People = () => {
             </Box>
 
             <Button colorScheme="blue" ml="auto">
-              CARGA DE PLAN DE VENTAS
+              {t('people.uploadSalesPlan')}
             </Button>
           </HStack>
         ) : (
           <HStack spacing={4} mb={6} align="flex-end">
             <Box>
-              <Text mb={2} fontSize="sm" color="gray.600">Buscar</Text>
+              <Text mb={2} fontSize="sm" color="gray.600">{t('people.search')}</Text>
               <Input
-                placeholder="Nombre"
+                placeholder={t('people.name')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 w="300px"
               />
             </Box>
             <Button colorScheme="blue" ml="auto" onClick={onOpen}>
-              AGREGAR VENDEDOR
+              {t('people.addSeller')}
             </Button>
           </HStack>
         )}
@@ -222,20 +224,20 @@ const People = () => {
         <Table variant="simple">
           <Thead>
             <Tr>
-              <Th>ID</Th>
-              <Th>Nombre</Th>
+              <Th>{t('people.id')}</Th>
+              <Th>{t('people.name')}</Th>
               {activeTab === 0 ? (
                 <>
-                  <Th>Periodo</Th>
-                  <Th>Estado</Th>
-                  <Th isNumeric>Cantidad</Th>
+                  <Th>{t('people.period')}</Th>
+                  <Th>{t('people.status')}</Th>
+                  <Th isNumeric>{t('people.quantity')}</Th>
                 </>
               ) : (
                 <>
-                  <Th>Email</Th>
-                  <Th>País</Th>
-                  <Th>Territorio</Th>
-                  <Th>Estado</Th>
+                  <Th>{t('people.email')}</Th>
+                  <Th>{t('people.country')}</Th>
+                  <Th>{t('people.territory')}</Th>
+                  <Th>{t('people.status')}</Th>
                 </>
               )}
             </Tr>
@@ -253,7 +255,7 @@ const People = () => {
               <Tr>
                 <Td colSpan={activeTab === 0 ? 5 : 6}>
                   <Center py={4}>
-                    <Text color="red.500">Error loading data.</Text>
+                    <Text color="red.500">{t('people.errorLoadingData')}</Text>
                   </Center>
                 </Td>
               </Tr>
@@ -262,7 +264,7 @@ const People = () => {
                 <Tr>
                   <Td colSpan={5}>
                     <Center py={4}>
-                      <Text color="gray.500">No sales plans found</Text>
+                      <Text color="gray.500">{t('people.noSalesPlansFound')}</Text>
                     </Center>
                   </Td>
                 </Tr>
@@ -281,7 +283,7 @@ const People = () => {
               <Tr>
                 <Td colSpan={6}>
                   <Center py={4}>
-                    <Text color="gray.500">No sellers found</Text>
+                    <Text color="gray.500">{t('people.noSellersFound')}</Text>
                   </Center>
                 </Td>
               </Tr>
@@ -302,7 +304,7 @@ const People = () => {
       </Box>
 
       <HStack spacing={4} justify="flex-end" mt={4}>
-        <Text fontSize="sm">Rows per page:</Text>
+        <Text fontSize="sm">{t('people.rowsPerPage')}</Text>
         <Select
           value={rowsPerPage}
           onChange={(e) => setRowsPerPage(e.target.value)}
@@ -319,47 +321,47 @@ const People = () => {
       <Modal isOpen={isOpen} onClose={onClose} size="xl">
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Agregar Nuevo Vendedor</ModalHeader>
+          <ModalHeader>{t('people.addNewSeller')}</ModalHeader>
           <ModalCloseButton />
           <form onSubmit={handleSubmit}>
             <ModalBody>
               <VStack spacing={4}>
                 <HStack spacing={4} w="100%">
                   <FormControl isRequired>
-                    <FormLabel>Nombres</FormLabel>
+                    <FormLabel>{t('people.firstName')}</FormLabel>
                     <Input
                       name="nombres"
                       value={formData.nombres}
                       onChange={handleInputChange}
-                      placeholder="Nombres"
+                      placeholder={t('people.firstName')}
                     />
                   </FormControl>
                   <FormControl isRequired>
-                    <FormLabel>Apellidos</FormLabel>
+                    <FormLabel>{t('people.lastName')}</FormLabel>
                     <Input
                       name="apellidos"
                       value={formData.apellidos}
                       onChange={handleInputChange}
-                      placeholder="Apellidos"
+                      placeholder={t('people.lastName')}
                     />
                   </FormControl>
                 </HStack>
 
                 <HStack spacing={4} w="100%">
                   <FormControl isRequired>
-                    <FormLabel>Tipo de Documento</FormLabel>
+                    <FormLabel>{t('people.documentType')}</FormLabel>
                     <Select
                       name="tipoDocumento"
                       value={formData.tipoDocumento}
                       onChange={handleInputChange}
                     >
-                      <option value="CC">Cédula de Ciudadanía</option>
-                      <option value="CE">Cédula de Extranjería</option>
-                      <option value="PAS">Pasaporte</option>
+                      <option value="CC">{t('people.cc')}</option>
+                      <option value="CE">{t('people.ce')}</option>
+                      <option value="PAS">{t('people.pas')}</option>
                     </Select>
                   </FormControl>
                   <FormControl isRequired>
-                    <FormLabel>Número de Documento</FormLabel>
+                    <FormLabel>{t('people.documentNumber')}</FormLabel>
                     <Input
                       name="numeroDocumento"
                       value={formData.numeroDocumento}
@@ -370,7 +372,7 @@ const People = () => {
                 </HStack>
 
                 <FormControl isRequired>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t('people.email')}</FormLabel>
                   <Input
                     name="email"
                     type="email"
@@ -381,7 +383,7 @@ const People = () => {
                 </FormControl>
 
                 <FormControl isRequired>
-                  <FormLabel>Teléfono</FormLabel>
+                  <FormLabel>{t('people.phone')}</FormLabel>
                   <Input
                     name="telefono"
                     value={formData.telefono}
@@ -391,7 +393,7 @@ const People = () => {
                 </FormControl>
 
                 <FormControl isRequired>
-                  <FormLabel>País</FormLabel>
+                  <FormLabel>{t('people.country')}</FormLabel>
                   <Input
                     name="pais"
                     value={formData.pais}
@@ -401,7 +403,7 @@ const People = () => {
                 </FormControl>
 
                 <FormControl isRequired>
-                  <FormLabel>Territorio ID</FormLabel>
+                  <FormLabel>{t('people.territoryId')}</FormLabel>
                   <Input
                     name="territorioId"
                     value={formData.territorioId}
@@ -414,14 +416,14 @@ const People = () => {
 
             <ModalFooter>
               <Button variant="ghost" mr={3} onClick={onClose}>
-                Cancelar
+                {t('people.cancel')}
               </Button>
               <Button
                 colorScheme="blue"
                 type="submit"
                 isLoading={createSalesmanMutation.isPending}
               >
-                Crear Vendedor
+                {t('people.createSeller')}
               </Button>
             </ModalFooter>
           </form>

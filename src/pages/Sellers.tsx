@@ -18,6 +18,7 @@ import {
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Seller {
   id: string;
@@ -39,6 +40,7 @@ const initialSellers: Seller[] = [
 ];
 
 const Sellers = () => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [sellers] = useState<Seller[]>(initialSellers);
   const [rowsPerPage, setRowsPerPage] = useState('10');
@@ -50,7 +52,7 @@ const Sellers = () => {
   return (
     <Container maxW="container.xl" py={8}>
       <Box mb={8}>
-        <Heading size="lg" mb={6}>Información de Vendedores</Heading>
+        <Heading size="lg" mb={6}>{t('sellers.title')}</Heading>
         <HStack spacing={4} justify="space-between">
           <Box w="300px">
             <InputGroup>
@@ -58,14 +60,14 @@ const Sellers = () => {
                 <SearchIcon color="gray.300" />
               </InputLeftElement>
               <Input
-                placeholder="Buscar"
+                placeholder={t('common.search')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </InputGroup>
           </Box>
           <Button colorScheme="blue">
-            CARGA DE PLAN DE VENTAS
+            {t('sellers.uploadSalesPlan').toUpperCase()}
           </Button>
         </HStack>
       </Box>
@@ -74,11 +76,11 @@ const Sellers = () => {
         <Table variant="simple">
           <Thead>
             <Tr>
-              <Th>ID</Th>
-              <Th>Nombre</Th>
-              <Th>País</Th>
-              <Th isNumeric>Meta de Ventas</Th>
-              <Th isNumeric>Rendimiento</Th>
+              <Th>{t('sellers.id').toUpperCase()}</Th>
+              <Th>{t('sellers.name').toUpperCase()}</Th>
+              <Th>{t('sellers.country').toUpperCase()}</Th>
+              <Th isNumeric>{t('sellers.salesGoal').toUpperCase()}</Th>
+              <Th isNumeric>{t('sellers.performance').toUpperCase()}</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -96,7 +98,7 @@ const Sellers = () => {
       </Box>
 
       <HStack spacing={4} justify="flex-end" mt={4}>
-        <Text>Rows per page:</Text>
+        <Text>{t('common.search')}:</Text>
         <Select
           value={rowsPerPage}
           onChange={(e) => setRowsPerPage(e.target.value)}

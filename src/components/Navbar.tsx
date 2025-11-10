@@ -1,5 +1,6 @@
 import { Box, Flex, Heading, Spacer, IconButton } from '@chakra-ui/react'
 import { HamburgerIcon } from '@chakra-ui/icons'
+import LanguageSwitcher from './LanguageSwitcher'
 
 interface NavbarProps {
   onMenuClick: () => void
@@ -20,6 +21,9 @@ function Navbar({ onMenuClick }: NavbarProps) {
         />
         <Heading size="md" color="white">MediSupply</Heading>
         <Spacer />
+        <Box color="white">
+          <LanguageSwitcher />
+        </Box>
       </Flex>
     </Box>
   )

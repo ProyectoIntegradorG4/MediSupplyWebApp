@@ -16,6 +16,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { providersApi } from '../services/api';
 
@@ -37,6 +38,7 @@ interface FormData {
 }
 
 const ProviderCreateModal = ({ isOpen, onClose }: ProviderCreateModalProps) => {
+  const { t } = useTranslation();
   const toast = useToast();
   const queryClient = useQueryClient();
   const [isActivo, setIsActivo] = useState(true);
@@ -56,8 +58,8 @@ const ProviderCreateModal = ({ isOpen, onClose }: ProviderCreateModalProps) => {
     mutationFn: providersApi.createProvider,
     onSuccess: () => {
       toast({
-        title: 'Proveedor creado',
-        description: 'El proveedor ha sido creado exitosamente',
+        title: t('providers.createSuccess'),
+        description: t('providers.createSuccess'),
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -67,8 +69,8 @@ const ProviderCreateModal = ({ isOpen, onClose }: ProviderCreateModalProps) => {
     },
     onError: (error) => {
       toast({
-        title: 'Error',
-        description: `Error al crear el proveedor: ${error.message}`,
+        title: t('common.error'),
+        description: `${t('providers.createError')}: ${error.message}`,
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -125,15 +127,15 @@ const ProviderCreateModal = ({ isOpen, onClose }: ProviderCreateModalProps) => {
       <ModalOverlay />
       <ModalContent>
         <ModalHeader fontSize="2xl" fontWeight="normal">
-          Creación de Proveedor
+          {t('providers.createProvider')}
         </ModalHeader>
         <ModalBody>
           <VStack spacing={6}>
             <HStack spacing={4} width="100%">
               <FormControl isRequired>
-                <FormLabel>Razón Social</FormLabel>
+                <FormLabel>{t('providers.businessName')}</FormLabel>
                 <Input
-                  placeholder="Razón Social"
+                  placeholder={t('providers.businessName')}
                   value={formData.razon_social}
                   onChange={(e) =>
                     setFormData({ ...formData, razon_social: e.target.value })
@@ -141,34 +143,34 @@ const ProviderCreateModal = ({ isOpen, onClose }: ProviderCreateModalProps) => {
                 />
               </FormControl>
               <FormControl>
-                <FormLabel>Tipo de Proveedor</FormLabel>
+                <FormLabel>{t('providers.providerType')}</FormLabel>
                 <Select
                   value={formData.tipo_proveedor}
                   onChange={(e) =>
                     setFormData({ ...formData, tipo_proveedor: e.target.value })
                   }
                 >
-                  <option value="distribuidor">Distribuidor</option>
-                  <option value="laboratorio">Laboratorio</option>
-                  <option value="importador">Importador</option>
+                  <option value="distribuidor">{t('providers.distributor')}</option>
+                  <option value="laboratorio">{t('providers.laboratory')}</option>
+                  <option value="importador">{t('providers.importer')}</option>
                 </Select>
               </FormControl>
             </HStack>
 
             <HStack spacing={4} width="100%">
               <FormControl isRequired>
-                <FormLabel>NIT</FormLabel>
+                <FormLabel>{t('providers.nit')}</FormLabel>
                 <Input
-                  placeholder="NIT"
+                  placeholder={t('providers.nit')}
                   value={formData.nit}
                   onChange={(e) => setFormData({ ...formData, nit: e.target.value })}
                 />
               </FormControl>
               <FormControl>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{t('providers.email')}</FormLabel>
                 <Input
                   type="email"
-                  placeholder="Email"
+                  placeholder={t('providers.email')}
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
@@ -177,22 +179,22 @@ const ProviderCreateModal = ({ isOpen, onClose }: ProviderCreateModalProps) => {
 
             <HStack spacing={4} width="100%">
               <FormControl isRequired>
-                <FormLabel>País</FormLabel>
+                <FormLabel>{t('providers.country')}</FormLabel>
                 <Select
                   value={formData.pais}
                   onChange={(e) => setFormData({ ...formData, pais: e.target.value })}
                 >
-                  <option value="colombia">Colombia</option>
-                  <option value="mexico">México</option>
-                  <option value="argentina">Argentina</option>
-                  <option value="chile">Chile</option>
-                  <option value="peru">Perú</option>
+                  <option value="colombia">{t('providers.colombia')}</option>
+                  <option value="mexico">{t('providers.mexico')}</option>
+                  <option value="argentina">{t('providers.argentina')}</option>
+                  <option value="chile">{t('providers.chile')}</option>
+                  <option value="peru">{t('providers.peru')}</option>
                 </Select>
               </FormControl>
               <FormControl>
-                <FormLabel>Ciudad</FormLabel>
+                <FormLabel>{t('providers.city')}</FormLabel>
                 <Input
-                  placeholder="Ciudad"
+                  placeholder={t('providers.city')}
                   value={formData.ciudad}
                   onChange={(e) => setFormData({ ...formData, ciudad: e.target.value })}
                 />
@@ -201,9 +203,9 @@ const ProviderCreateModal = ({ isOpen, onClose }: ProviderCreateModalProps) => {
 
             <HStack spacing={4} width="100%">
               <FormControl>
-                <FormLabel>Teléfono</FormLabel>
+                <FormLabel>{t('providers.phone')}</FormLabel>
                 <Input
-                  placeholder="Teléfono"
+                  placeholder={t('providers.phone')}
                   value={formData.telefono}
                   onChange={(e) =>
                     setFormData({ ...formData, telefono: e.target.value })
@@ -211,9 +213,9 @@ const ProviderCreateModal = ({ isOpen, onClose }: ProviderCreateModalProps) => {
                 />
               </FormControl>
               <FormControl>
-                <FormLabel>Dirección</FormLabel>
+                <FormLabel>{t('providers.address')}</FormLabel>
                 <Input
-                  placeholder="Dirección"
+                  placeholder={t('providers.address')}
                   value={formData.direccion}
                   onChange={(e) =>
                     setFormData({ ...formData, direccion: e.target.value })
@@ -228,7 +230,7 @@ const ProviderCreateModal = ({ isOpen, onClose }: ProviderCreateModalProps) => {
                 onChange={(e) => setIsActivo(e.target.checked)}
                 colorScheme="blue"
               >
-                ¿Está Activo?
+                {t('common.active')}
               </Checkbox>
             </HStack>
           </VStack>
@@ -236,7 +238,7 @@ const ProviderCreateModal = ({ isOpen, onClose }: ProviderCreateModalProps) => {
 
         <ModalFooter>
           <Button variant="outline" mr={3} onClick={handleClose}>
-            CANCELAR
+            {t('common.cancel')}
           </Button>
           <Button
             colorScheme="blue"
@@ -244,7 +246,7 @@ const ProviderCreateModal = ({ isOpen, onClose }: ProviderCreateModalProps) => {
             isDisabled={!isFormValid()}
             isLoading={createMutation.isPending}
           >
-            ACEPTAR
+            {t('common.accept')}
           </Button>
         </ModalFooter>
       </ModalContent>
