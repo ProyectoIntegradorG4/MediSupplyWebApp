@@ -12,7 +12,8 @@ WORKDIR /app
 COPY package*.json ./
 
 # Instalar dependencias (incluyendo dev dependencies para el build)
-RUN npm ci
+# Using npm install instead of npm ci to avoid Rollup optional dependencies issue
+RUN rm -f package-lock.json && npm install
 
 # Copiar código fuente
 COPY . .
