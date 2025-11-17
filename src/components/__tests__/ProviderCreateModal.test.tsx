@@ -1,6 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { ChakraProvider } from '@chakra-ui/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { render, screen, fireEvent, waitFor } from '../../test/test-utils';
 import { vi } from 'vitest';
 import ProviderCreateModal from '../ProviderCreateModal';
 import { providersApi } from '../../services/api';
@@ -30,20 +28,6 @@ vi.mock('../../services/api', () => ({
   },
 }));
 
-const TestWrapper = ({ children }: { children: React.ReactNode }) => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false },
-      mutations: { retry: false },
-    },
-  });
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <ChakraProvider>{children}</ChakraProvider>
-    </QueryClientProvider>
-  );
-};
 
 describe('ProviderCreateModal Component', () => {
   const defaultProps = {
@@ -57,9 +41,9 @@ describe('ProviderCreateModal Component', () => {
 
   it('renders modal when open', () => {
     render(
-      <TestWrapper>
+      
         <ProviderCreateModal {...defaultProps} />
-      </TestWrapper>
+      
     );
 
     expect(screen.getByText('Creación de Proveedor')).toBeInTheDocument();
@@ -70,9 +54,9 @@ describe('ProviderCreateModal Component', () => {
 
   it('does not render when closed', () => {
     render(
-      <TestWrapper>
+      
         <ProviderCreateModal {...defaultProps} isOpen={false} />
-      </TestWrapper>
+      
     );
 
     expect(screen.queryByText('Creación de Proveedor')).not.toBeInTheDocument();
@@ -80,9 +64,9 @@ describe('ProviderCreateModal Component', () => {
 
   it('has all required form fields', () => {
     render(
-      <TestWrapper>
+      
         <ProviderCreateModal {...defaultProps} />
-      </TestWrapper>
+      
     );
 
     expect(screen.getByLabelText(/Razón Social/i)).toBeInTheDocument();
@@ -98,9 +82,9 @@ describe('ProviderCreateModal Component', () => {
 
   it('disables accept button when required fields are empty', () => {
     render(
-      <TestWrapper>
+      
         <ProviderCreateModal {...defaultProps} />
-      </TestWrapper>
+      
     );
 
     const acceptButton = screen.getByText('ACEPTAR');
@@ -109,9 +93,9 @@ describe('ProviderCreateModal Component', () => {
 
   it('enables accept button when required fields are filled', () => {
     render(
-      <TestWrapper>
+      
         <ProviderCreateModal {...defaultProps} />
-      </TestWrapper>
+      
     );
 
     const razonSocialInput = screen.getByLabelText(/Razón Social/i);
@@ -128,9 +112,9 @@ describe('ProviderCreateModal Component', () => {
     const mockCreate = vi.mocked(providersApi.createProvider);
 
     render(
-      <TestWrapper>
+      
         <ProviderCreateModal {...defaultProps} />
-      </TestWrapper>
+      
     );
 
     const razonSocialInput = screen.getByLabelText(/Razón Social/i);
@@ -167,9 +151,9 @@ describe('ProviderCreateModal Component', () => {
 
   it('handles checkbox for active status', () => {
     render(
-      <TestWrapper>
+      
         <ProviderCreateModal {...defaultProps} />
-      </TestWrapper>
+      
     );
 
     const checkbox = screen.getByRole('checkbox', { name: /¿Está Activo?/i });
@@ -181,9 +165,9 @@ describe('ProviderCreateModal Component', () => {
 
   it('closes modal when cancel is clicked', () => {
     render(
-      <TestWrapper>
+      
         <ProviderCreateModal {...defaultProps} />
-      </TestWrapper>
+      
     );
 
     const cancelButton = screen.getByText('CANCELAR');
@@ -197,9 +181,9 @@ describe('ProviderCreateModal Component', () => {
     mockCreate.mockRejectedValueOnce(new Error('Network error'));
 
     render(
-      <TestWrapper>
+      
         <ProviderCreateModal {...defaultProps} />
-      </TestWrapper>
+      
     );
 
     const razonSocialInput = screen.getByLabelText(/Razón Social/i);
@@ -218,9 +202,9 @@ describe('ProviderCreateModal Component', () => {
 
   it('has correct default values', () => {
     render(
-      <TestWrapper>
+      
         <ProviderCreateModal {...defaultProps} />
-      </TestWrapper>
+      
     );
 
     const tipoSelect = screen.getByLabelText(/Tipo de Proveedor/i) as HTMLSelectElement;
@@ -232,9 +216,9 @@ describe('ProviderCreateModal Component', () => {
 
   it('allows changing tipo_proveedor select', () => {
     render(
-      <TestWrapper>
+      
         <ProviderCreateModal {...defaultProps} />
-      </TestWrapper>
+      
     );
 
     const tipoSelect = screen.getByLabelText(/Tipo de Proveedor/i) as HTMLSelectElement;
@@ -245,9 +229,9 @@ describe('ProviderCreateModal Component', () => {
 
   it('allows changing país select', () => {
     render(
-      <TestWrapper>
+      
         <ProviderCreateModal {...defaultProps} />
-      </TestWrapper>
+      
     );
 
     const paisSelect = screen.getByLabelText(/País/i) as HTMLSelectElement;

@@ -1,7 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { BrowserRouter } from 'react-router-dom'
-import { ChakraProvider } from '@chakra-ui/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, fireEvent, waitFor } from '../../test/test-utils'
 import { vi } from 'vitest'
 import Login from '../Login'
 
@@ -15,25 +12,6 @@ vi.mock('react-router-dom', async () => {
   }
 })
 
-// Test wrapper component
-const TestWrapper = ({ children }: { children: React.ReactNode }) => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false },
-      mutations: { retry: false },
-    },
-  })
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <ChakraProvider>
-        <BrowserRouter>
-          {children}
-        </BrowserRouter>
-      </ChakraProvider>
-    </QueryClientProvider>
-  )
-}
 
 describe('Login Component', () => {
   beforeEach(() => {
@@ -41,45 +19,33 @@ describe('Login Component', () => {
   })
 
   it('renders login form elements', () => {
-    render(
-      <TestWrapper>
-        <Login />
-      </TestWrapper>
-    )
+    render(<Login />)
 
     // Check that the form elements are present
-    expect(screen.getByPlaceholderText('Value')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Usuario')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('••••••••')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /log in/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /iniciar sesión/i })).toBeInTheDocument()
   })
 
   it('shows validation errors for empty fields', async () => {
-    render(
-      <TestWrapper>
-        <Login />
-      </TestWrapper>
-    )
+    render(<Login />)
 
-    const submitButton = screen.getByRole('button', { name: /log in/i })
+    const submitButton = screen.getByRole('button', { name: /iniciar sesión/i })
     fireEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText('Please fill in all required fields')).toBeInTheDocument()
+      expect(screen.getByText(/Por favor complete todos los campos requeridos/i)).toBeInTheDocument()
     })
 
     expect(mockNavigate).not.toHaveBeenCalled()
   })
 
   it('navigates to products page on successful login', async () => {
-    render(
-      <TestWrapper>
-        <Login />
-      </TestWrapper>
-    )
+    render(<Login />)
 
-    const usernameInput = screen.getByPlaceholderText('Value')
+    const usernameInput = screen.getByPlaceholderText('Usuario')
     const passwordInput = screen.getByPlaceholderText('••••••••')
-    const submitButton = screen.getByRole('button', { name: /log in/i })
+    const submitButton = screen.getByRole('button', { name: /iniciar sesión/i })
 
     fireEvent.change(usernameInput, { target: { value: 'testuser' } })
     fireEvent.change(passwordInput, { target: { value: 'testpass' } })
@@ -91,15 +57,11 @@ describe('Login Component', () => {
   })
 
   it('displays loading state during login', async () => {
-    render(
-      <TestWrapper>
-        <Login />
-      </TestWrapper>
-    )
+    render(<Login />)
 
-    const usernameInput = screen.getByPlaceholderText('Value')
+    const usernameInput = screen.getByPlaceholderText('Usuario')
     const passwordInput = screen.getByPlaceholderText('••••••••')
-    const submitButton = screen.getByRole('button', { name: /log in/i })
+    const submitButton = screen.getByRole('button', { name: /iniciar sesión/i })
 
     fireEvent.change(usernameInput, { target: { value: 'testuser' } })
     fireEvent.change(passwordInput, { target: { value: 'testpass' } })

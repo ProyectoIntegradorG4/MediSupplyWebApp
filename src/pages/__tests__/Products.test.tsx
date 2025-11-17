@@ -1,7 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { BrowserRouter } from 'react-router-dom'
-import { ChakraProvider } from '@chakra-ui/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, fireEvent, waitFor } from '../../test/test-utils'
 import { vi } from 'vitest'
 import Products from '../Products'
 import { productsApi } from '../../services/api'
@@ -77,47 +74,24 @@ vi.mock('../../services/api', () => ({
   }
 }))
 
-// Test wrapper component
-const TestWrapper = ({ children }: { children: React.ReactNode }) => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false },
-      mutations: { retry: false },
-    },
-  })
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <ChakraProvider>
-        <BrowserRouter>
-          {children}
-        </BrowserRouter>
-      </ChakraProvider>
-    </QueryClientProvider>
-  )
-}
 
 describe('Products Component', () => {
   it('renders products page elements', async () => {
-    render(
-      <TestWrapper>
-        <Products />
-      </TestWrapper>
-    )
+    render(<Products />)
 
-    expect(screen.getByText('Proveedores y Productos')).toBeInTheDocument()
+    expect(screen.getByText('Gestión de Productos')).toBeInTheDocument()
     expect(screen.getByText('PROVEEDORES')).toBeInTheDocument()
     expect(screen.getByText('PRODUCTOS')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('SKU')).toBeInTheDocument()
-    expect(screen.getByText('CARGA INDIVIDUAL')).toBeInTheDocument()
-    expect(screen.getByText('CARGA MASIVA')).toBeInTheDocument()
+    expect(screen.getByText('CREAR PRODUCTO INDIVIDUAL')).toBeInTheDocument()
+    expect(screen.getByText('CARGAR PRODUCTOS MASIVAMENTE')).toBeInTheDocument()
   })
 
   it('displays products table with data', async () => {
     render(
-      <TestWrapper>
+      
         <Products />
-      </TestWrapper>
+      
     )
 
     await waitFor(() => {
@@ -141,9 +115,9 @@ describe('Products Component', () => {
 
   it('filters products by SKU search', async () => {
     render(
-      <TestWrapper>
+      
         <Products />
-      </TestWrapper>
+      
     )
 
     await waitFor(() => {
@@ -160,13 +134,9 @@ describe('Products Component', () => {
   })
 
   it('opens individual product creation modal', async () => {
-    render(
-      <TestWrapper>
-        <Products />
-      </TestWrapper>
-    )
+    render(<Products />)
 
-    const individualButton = screen.getByText('CARGA INDIVIDUAL')
+    const individualButton = screen.getByText('CREAR PRODUCTO INDIVIDUAL')
     fireEvent.click(individualButton)
 
     await waitFor(() => {
@@ -175,17 +145,13 @@ describe('Products Component', () => {
   })
 
   it('opens bulk upload modal', async () => {
-    render(
-      <TestWrapper>
-        <Products />
-      </TestWrapper>
-    )
+    render(<Products />)
 
-    const bulkButton = screen.getByText('CARGA MASIVA')
+    const bulkButton = screen.getByText('CARGAR PRODUCTOS MASIVAMENTE')
     fireEvent.click(bulkButton)
 
     await waitFor(() => {
-      expect(screen.getByText('Carga de Archivos')).toBeInTheDocument()
+      expect(screen.getByText('Cargar Archivo CSV')).toBeInTheDocument()
     })
   })
 
@@ -197,9 +163,9 @@ describe('Products Component', () => {
     )
 
     render(
-      <TestWrapper>
+      
         <Products />
-      </TestWrapper>
+      
     )
 
     expect(screen.getByText('Loading...')).toBeInTheDocument()
@@ -207,9 +173,9 @@ describe('Products Component', () => {
 
   it('refreshes products after successful upload', async () => {
     render(
-      <TestWrapper>
+      
         <Products />
-      </TestWrapper>
+      
     )
 
     // Wait for initial products to load
@@ -218,11 +184,11 @@ describe('Products Component', () => {
     })
 
     // Open bulk upload modal
-    const bulkButton = screen.getByText('CARGA MASIVA')
+    const bulkButton = screen.getByText('CARGAR PRODUCTOS MASIVAMENTE')
     fireEvent.click(bulkButton)
 
     await waitFor(() => {
-      expect(screen.getByText('Carga de Archivos')).toBeInTheDocument()
+      expect(screen.getByText('Cargar Archivo CSV')).toBeInTheDocument()
     })
 
     // The test verifies that the modal opens, which would trigger
@@ -235,9 +201,9 @@ describe('Products Component', () => {
     mockGetProducts.mockRejectedValueOnce(new Error('API Error'))
 
     render(
-      <TestWrapper>
+      
         <Products />
-      </TestWrapper>
+      
     )
 
     await waitFor(() => {
@@ -250,9 +216,9 @@ describe('Products Component', () => {
     mockGetProducts.mockResolvedValueOnce([])
 
     render(
-      <TestWrapper>
+      
         <Products />
-      </TestWrapper>
+      
     )
 
     await waitFor(() => {
@@ -262,9 +228,9 @@ describe('Products Component', () => {
 
   it('changes rows per page selection', async () => {
     render(
-      <TestWrapper>
+      
         <Products />
-      </TestWrapper>
+      
     )
 
     await waitFor(() => {
@@ -279,9 +245,9 @@ describe('Products Component', () => {
 
   it('navigates to providers tab when clicked', async () => {
     render(
-      <TestWrapper>
+      
         <Products />
-      </TestWrapper>
+      
     )
 
     const providersTab = screen.getByText('PROVEEDORES')

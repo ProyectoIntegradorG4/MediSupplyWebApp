@@ -1,6 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import { ChakraProvider } from '@chakra-ui/react';
+import { render, screen, fireEvent } from '../../test/test-utils';
 import { vi } from 'vitest';
 import Sidebar from '../Sidebar';
 
@@ -15,13 +13,6 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-const TestWrapper = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <BrowserRouter>
-      <ChakraProvider>{children}</ChakraProvider>
-    </BrowserRouter>
-  );
-};
 
 describe('Sidebar Component', () => {
   const defaultProps = {
@@ -35,9 +26,9 @@ describe('Sidebar Component', () => {
 
   it('renders when open', () => {
     render(
-      <TestWrapper>
+      
         <Sidebar {...defaultProps} />
-      </TestWrapper>
+      
     );
 
     // Sidebar should be in the document when open
@@ -46,9 +37,9 @@ describe('Sidebar Component', () => {
 
   it('does not render when closed', () => {
     render(
-      <TestWrapper>
+      
         <Sidebar isOpen={false} onClose={defaultProps.onClose} />
-      </TestWrapper>
+      
     );
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -56,9 +47,9 @@ describe('Sidebar Component', () => {
 
   it('has navigation drawer content', () => {
     render(
-      <TestWrapper>
+      
         <Sidebar {...defaultProps} />
-      </TestWrapper>
+      
     );
 
     // Check that the drawer is rendered
@@ -68,9 +59,9 @@ describe('Sidebar Component', () => {
 
   it('calls onClose when a menu item is clicked', () => {
     const { container } = render(
-      <TestWrapper>
+      
         <Sidebar {...defaultProps} />
-      </TestWrapper>
+      
     );
 
     // Click on the first icon box
@@ -83,9 +74,9 @@ describe('Sidebar Component', () => {
 
   it('navigates when icon is clicked', () => {
     const { container } = render(
-      <TestWrapper>
+      
         <Sidebar {...defaultProps} />
-      </TestWrapper>
+      
     );
 
     // Click the first navigation icon
@@ -98,9 +89,9 @@ describe('Sidebar Component', () => {
 
   it('renders all navigation items', () => {
     render(
-      <TestWrapper>
+      
         <Sidebar {...defaultProps} />
-      </TestWrapper>
+      
     );
 
     // Sidebar drawer should be visible
@@ -110,9 +101,9 @@ describe('Sidebar Component', () => {
 
   it('does not call onClose when onClose is undefined', () => {
     const { container } = render(
-      <TestWrapper>
+      
         <Sidebar isOpen={true} onClose={vi.fn()} />
-      </TestWrapper>
+      
     );
 
     // Click on a menu item

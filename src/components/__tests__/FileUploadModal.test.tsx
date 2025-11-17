@@ -1,5 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { ChakraProvider } from '@chakra-ui/react'
+import { render, screen, fireEvent, waitFor } from '../../test/test-utils'
 import { vi } from 'vitest'
 import FileUploadModal from '../FileUploadModal'
 import { productsApi } from '../../services/api'
@@ -10,10 +9,6 @@ vi.mock('../../services/api', () => ({
     uploadProductsCsv: vi.fn(() => Promise.resolve())
   }
 }))
-
-const TestWrapper = ({ children }: { children: React.ReactNode }) => {
-  return <ChakraProvider>{children}</ChakraProvider>
-}
 
 describe('FileUploadModal Component', () => {
   const defaultProps = {
@@ -27,33 +22,21 @@ describe('FileUploadModal Component', () => {
   })
 
   it('renders modal when open', () => {
-    render(
-      <TestWrapper>
-        <FileUploadModal {...defaultProps} />
-      </TestWrapper>
-    )
+    render(<FileUploadModal {...defaultProps} />)
 
-    expect(screen.getByText('Carga de Archivos')).toBeInTheDocument()
-    expect(screen.getByText(/Por favor seleccione el archivo/i)).toBeInTheDocument()
+    expect(screen.getByText('Cargar Archivo CSV')).toBeInTheDocument()
+    expect(screen.getByText(/Tamaño máximo de archivo/i)).toBeInTheDocument()
     expect(screen.getByText('Link or drag and drop')).toBeInTheDocument()
   })
 
   it('does not render when closed', () => {
-    render(
-      <TestWrapper>
-        <FileUploadModal {...defaultProps} isOpen={false} />
-      </TestWrapper>
-    )
+    render(<FileUploadModal {...defaultProps} isOpen={false} />)
 
-    expect(screen.queryByText('Carga de Archivos')).not.toBeInTheDocument()
+    expect(screen.queryByText('Cargar Archivo CSV')).not.toBeInTheDocument()
   })
 
   it('accepts CSV file selection', () => {
-    render(
-      <TestWrapper>
-        <FileUploadModal {...defaultProps} />
-      </TestWrapper>
-    )
+    render(<FileUploadModal {...defaultProps} />)
 
     const file = new File(['test content'], 'test.csv', { type: 'text/csv' })
     const input = document.querySelector('input[type="file"]') as HTMLInputElement
@@ -64,11 +47,7 @@ describe('FileUploadModal Component', () => {
   })
 
   it('shows error for files larger than 3MB', async () => {
-    render(
-      <TestWrapper>
-        <FileUploadModal {...defaultProps} />
-      </TestWrapper>
-    )
+    render(<FileUploadModal {...defaultProps} />)
 
     // Create a file larger than 3MB
     const largeFile = new File(['x'.repeat(4 * 1024 * 1024)], 'large.csv', { type: 'text/csv' })
@@ -77,16 +56,12 @@ describe('FileUploadModal Component', () => {
     fireEvent.change(input, { target: { files: [largeFile] } })
 
     await waitFor(() => {
-      expect(screen.getByText(/El archivo no debe superar los 3MB/i)).toBeInTheDocument()
+      expect(screen.getByText(/El archivo es demasiado grande/i)).toBeInTheDocument()
     })
   })
 
   it('shows error for non-CSV files', async () => {
-    render(
-      <TestWrapper>
-        <FileUploadModal {...defaultProps} />
-      </TestWrapper>
-    )
+    render(<FileUploadModal {...defaultProps} />)
 
     const txtFile = new File(['test'], 'test.txt', { type: 'text/plain' })
     const input = document.querySelector('input[type="file"]') as HTMLInputElement
@@ -101,11 +76,7 @@ describe('FileUploadModal Component', () => {
   it('uploads file successfully', async () => {
     const mockUpload = vi.mocked(productsApi.uploadProductsCsv)
 
-    render(
-      <TestWrapper>
-        <FileUploadModal {...defaultProps} />
-      </TestWrapper>
-    )
+    render(<FileUploadModal {...defaultProps} />)
 
     const file = new File(['test content'], 'test.csv', { type: 'text/csv' })
     const input = document.querySelector('input[type="file"]') as HTMLInputElement
@@ -130,11 +101,7 @@ describe('FileUploadModal Component', () => {
     const mockUpload = vi.mocked(productsApi.uploadProductsCsv)
     mockUpload.mockRejectedValueOnce(new Error('Upload failed'))
 
-    render(
-      <TestWrapper>
-        <FileUploadModal {...defaultProps} />
-      </TestWrapper>
-    )
+    render(<FileUploadModal {...defaultProps} />)
 
     const file = new File(['test content'], 'test.csv', { type: 'text/csv' })
     const input = document.querySelector('input[type="file"]') as HTMLInputElement
@@ -150,11 +117,7 @@ describe('FileUploadModal Component', () => {
   })
 
   it('closes modal when cancel is clicked', () => {
-    render(
-      <TestWrapper>
-        <FileUploadModal {...defaultProps} />
-      </TestWrapper>
-    )
+    render(<FileUploadModal {...defaultProps} />)
 
     const cancelButton = screen.getByText('CANCELAR')
     fireEvent.click(cancelButton)
@@ -163,22 +126,14 @@ describe('FileUploadModal Component', () => {
   })
 
   it('disables accept button when no file selected', () => {
-    render(
-      <TestWrapper>
-        <FileUploadModal {...defaultProps} />
-      </TestWrapper>
-    )
+    render(<FileUploadModal {...defaultProps} />)
 
     const acceptButton = screen.getByText('ACEPTAR')
     expect(acceptButton).toBeDisabled()
   })
 
   it('handles drag and drop', () => {
-    render(
-      <TestWrapper>
-        <FileUploadModal {...defaultProps} />
-      </TestWrapper>
-    )
+    render(<FileUploadModal {...defaultProps} />)
 
     const file = new File(['test content'], 'test.csv', { type: 'text/csv' })
     const dropZone = screen.getByText(/Link or drag and drop/i).closest('div')
@@ -193,11 +148,7 @@ describe('FileUploadModal Component', () => {
   })
 
   it('shows error for large files dropped', async () => {
-    render(
-      <TestWrapper>
-        <FileUploadModal {...defaultProps} />
-      </TestWrapper>
-    )
+    render(<FileUploadModal {...defaultProps} />)
 
     const largeFile = new File(['x'.repeat(4 * 1024 * 1024)], 'large.csv', { type: 'text/csv' })
     const dropZone = screen.getByText(/Link or drag and drop/i).closest('div')
@@ -214,11 +165,7 @@ describe('FileUploadModal Component', () => {
   })
 
   it('shows error for non-CSV files dropped', async () => {
-    render(
-      <TestWrapper>
-        <FileUploadModal {...defaultProps} />
-      </TestWrapper>
-    )
+    render(<FileUploadModal {...defaultProps} />)
 
     const txtFile = new File(['test'], 'test.txt', { type: 'text/plain' })
     const dropZone = screen.getByText(/Link or drag and drop/i).closest('div')
