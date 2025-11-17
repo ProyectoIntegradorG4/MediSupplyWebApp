@@ -171,29 +171,30 @@ describe('Products Component', () => {
     expect(screen.getByText('Loading...')).toBeInTheDocument()
   })
 
-  it('refreshes products after successful upload', async () => {
-    render(
-      
-        <Products />
-      
-    )
+  it('creates new product via individual modal and closes', async () => {
+    render(<Products />)
 
     // Wait for initial products to load
     await waitFor(() => {
       expect(screen.getByText('SKU001')).toBeInTheDocument()
     })
 
-    // Open bulk upload modal
-    const bulkButton = screen.getByText('CARGAR PRODUCTOS MASIVAMENTE')
-    fireEvent.click(bulkButton)
+    // Open individual product creation modal
+    const individualButton = screen.getByText('CREAR PRODUCTO INDIVIDUAL')
+    fireEvent.click(individualButton)
 
     await waitFor(() => {
-      expect(screen.getByText('Cargar Archivo CSV')).toBeInTheDocument()
+      expect(screen.getByText('Carga Individual de Productos')).toBeInTheDocument()
     })
 
-    // The test verifies that the modal opens, which would trigger
-    // the query invalidation on successful upload
-    expect(productsApi.getProducts).toHaveBeenCalled()
+    // Close the modal
+    const cancelButton = screen.getByText('CANCELAR')
+    fireEvent.click(cancelButton)
+
+    // Verify modal is closed
+    await waitFor(() => {
+      expect(screen.queryByText('Carga Individual de Productos')).not.toBeInTheDocument()
+    })
   })
 
   it('handles error state when fetching products fails', async () => {
@@ -245,9 +246,9 @@ describe('Products Component', () => {
 
   it('navigates to providers tab when clicked', async () => {
     render(
-      
+
         <Products />
-      
+
     )
 
     const providersTab = screen.getByText('PROVEEDORES')
@@ -255,5 +256,95 @@ describe('Products Component', () => {
 
     // The navigate function should be called with /providers
     // This is handled by the navigate mock in the test setup
+  })
+
+  it('handles pagination - navigates to next page', async () => {
+    // Create enough products to require pagination
+    const mockGetProducts = vi.mocked(productsApi.getProducts)
+    const manyProducts = Array.from({ length: 15 }, (_, i) => ({
+      productoId: `${i + 1}`,
+      sku: `SKU00${i + 1}`,
+      nombre: `Test Product ${i + 1}`,
+      descripcion: 'Test Descripcion',
+      categoriaId: 'CAT-VAC-001',
+      subcategoria: 'Vacunas',
+      laboratorio: '',
+      principioActivo: '',
+      concentracion: '',
+      formaFarmaceutica: 'Tableta',
+      registroSanitario: `INVIMA-${i + 100}`,
+      requierePrescripcion: false,
+      codigoBarras: '',
+      estado_producto: 'activo',
+      actualizado_en: '2025-11-03T01:00:00',
+      fechaVencimiento: '2026-01-01',
+      stock: '10',
+      location: 'Bodega 1',
+      ubicacion: 'Bogotá D.C.'
+    }))
+    mockGetProducts.mockResolvedValueOnce(manyProducts)
+
+    render(<Products />)
+
+    await waitFor(() => {
+      expect(screen.getByText('SKU001')).toBeInTheDocument()
+    })
+
+    // Find and click the "Next page" button
+    const nextButton = screen.getByLabelText('Next page')
+    fireEvent.click(nextButton)
+
+    // Verify we're on page 2
+    await waitFor(() => {
+      expect(screen.getByText('Page 2 of 2')).toBeInTheDocument()
+    })
+  })
+
+  it('handles pagination - navigates to previous page', async () => {
+    const mockGetProducts = vi.mocked(productsApi.getProducts)
+    const manyProducts = Array.from({ length: 15 }, (_, i) => ({
+      productoId: `${i + 1}`,
+      sku: `SKU00${i + 1}`,
+      nombre: `Test Product ${i + 1}`,
+      descripcion: 'Test Descripcion',
+      categoriaId: 'CAT-VAC-001',
+      subcategoria: 'Vacunas',
+      laboratorio: '',
+      principioActivo: '',
+      concentracion: '',
+      formaFarmaceutica: 'Tableta',
+      registroSanitario: `INVIMA-${i + 100}`,
+      requierePrescripcion: false,
+      codigoBarras: '',
+      estado_producto: 'activo',
+      actualizado_en: '2025-11-03T01:00:00',
+      fechaVencimiento: '2026-01-01',
+      stock: '10',
+      location: 'Bodega 1',
+      ubicacion: 'Bogotá D.C.'
+    }))
+    mockGetProducts.mockResolvedValueOnce(manyProducts)
+
+    render(<Products />)
+
+    await waitFor(() => {
+      expect(screen.getByText('SKU001')).toBeInTheDocument()
+    })
+
+    // Go to page 2 first
+    const nextButton = screen.getByLabelText('Next page')
+    fireEvent.click(nextButton)
+
+    await waitFor(() => {
+      expect(screen.getByText('Page 2 of 2')).toBeInTheDocument()
+    })
+
+    // Now go back to page 1
+    const prevButton = screen.getByLabelText('Previous page')
+    fireEvent.click(prevButton)
+
+    await waitFor(() => {
+      expect(screen.getByText('Page 1 of 2')).toBeInTheDocument()
+    })
   })
 })
