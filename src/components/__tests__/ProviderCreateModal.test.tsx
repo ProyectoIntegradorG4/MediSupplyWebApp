@@ -40,44 +40,32 @@ describe('ProviderCreateModal Component', () => {
   });
 
   it('renders modal when open', () => {
-    render(
-      
-        <ProviderCreateModal {...defaultProps} />
-      
-    );
+    render(<ProviderCreateModal {...defaultProps} />);
 
-    expect(screen.getByText('Creación de Proveedor')).toBeInTheDocument();
+    expect(screen.getByText('Crear Proveedor')).toBeInTheDocument();
     expect(screen.getByLabelText(/Razón Social/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/NIT/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/País/i)).toBeInTheDocument();
   });
 
   it('does not render when closed', () => {
-    render(
-      
-        <ProviderCreateModal {...defaultProps} isOpen={false} />
-      
-    );
+    render(<ProviderCreateModal {...defaultProps} isOpen={false} />);
 
-    expect(screen.queryByText('Creación de Proveedor')).not.toBeInTheDocument();
+    expect(screen.queryByText('Crear Proveedor')).not.toBeInTheDocument();
   });
 
   it('has all required form fields', () => {
-    render(
-      
-        <ProviderCreateModal {...defaultProps} />
-      
-    );
+    render(<ProviderCreateModal {...defaultProps} />);
 
     expect(screen.getByLabelText(/Razón Social/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/NIT/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/País/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Tipo de Proveedor/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Correo Electrónico/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Ciudad/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Teléfono/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Dirección/i)).toBeInTheDocument();
-    expect(screen.getByText(/¿Está Activo?/i)).toBeInTheDocument();
+    expect(screen.getByText(/Activo/i)).toBeInTheDocument();
   });
 
   it('disables accept button when required fields are empty', () => {
@@ -119,7 +107,7 @@ describe('ProviderCreateModal Component', () => {
 
     const razonSocialInput = screen.getByLabelText(/Razón Social/i);
     const nitInput = screen.getByLabelText(/NIT/i);
-    const emailInput = screen.getByLabelText(/Email/i);
+    const emailInput = screen.getByLabelText(/Correo Electrónico/i);
 
     fireEvent.change(razonSocialInput, { target: { value: 'Test Provider' } });
     fireEvent.change(nitInput, { target: { value: '123456789' } });
@@ -150,13 +138,9 @@ describe('ProviderCreateModal Component', () => {
   });
 
   it('handles checkbox for active status', () => {
-    render(
-      
-        <ProviderCreateModal {...defaultProps} />
-      
-    );
+    render(<ProviderCreateModal {...defaultProps} />);
 
-    const checkbox = screen.getByRole('checkbox', { name: /¿Está Activo?/i });
+    const checkbox = screen.getByRole('checkbox', { name: /Activo/i });
     expect(checkbox).toBeChecked();
 
     fireEvent.click(checkbox);

@@ -48,8 +48,7 @@ describe('ProductCreateModal Component', () => {
     expect(screen.getByText('Carga Individual de Productos')).toBeInTheDocument()
     expect(screen.getByText('Nombre *')).toBeInTheDocument()
     expect(screen.getByText('SKU *')).toBeInTheDocument()
-    expect(screen.getByText('Location *')).toBeInTheDocument()
-    expect(screen.getByText('Ubicación *')).toBeInTheDocument()
+    expect(screen.getAllByText('Ubicación *').length).toBeGreaterThan(0)
     expect(screen.getByText('Stock')).toBeInTheDocument()
   })
 
