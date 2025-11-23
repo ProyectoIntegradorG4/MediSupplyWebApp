@@ -276,12 +276,12 @@ const People = () => {
                 </Tr>
               ) : (
                 filteredPlans.map((plan, index) => (
-                  <Tr key={plan.id} bg={index % 2 === 0 ? 'gray.50' : 'white'}>
-                    <Td>{plan.id}</Td>
+                  <Tr key={plan.planId} bg={index % 2 === 0 ? 'gray.50' : 'white'}>
+                    <Td>{plan.planId}</Td>
                     <Td>{plan.nombre}</Td>
-                    <Td>{plan.periodo}</Td>
+                    <Td>{`${plan.periodo.desde} - ${plan.periodo.hasta}`}</Td>
                     <Td>{plan.estado}</Td>
-                    <Td isNumeric>{plan.cantidad.toLocaleString()}</Td>
+                    <Td isNumeric>{plan.metas_count.toLocaleString()}</Td>
                   </Tr>
                 ))
               )

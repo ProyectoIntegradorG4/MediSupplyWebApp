@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { Product, Provider, PaginatedResponse, ProviderPaginatedResponse, User, SalesPlan, UsersPaginatedResponse, SalesPlansPaginatedResponse, Salesman, SalesmanPaginatedResponse, CreateSalesmanRequest } from '../types/api';
-import { mockSellers, mockSalesPlans } from '../mocks';
+import { Product, Provider, PaginatedResponse, ProviderPaginatedResponse, User, SalesPlan, UsersPaginatedResponse, SalesPlansPaginatedResponse, Salesman, SalesmanPaginatedResponse, CreateSalesmanRequest, Delivery, DeliveryPaginatedResponse } from '../types/api';
+import { mockSellers, mockSalesPlans, mockDeliveries } from '../mocks';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
@@ -93,7 +93,7 @@ export const usersApi = {
 export const salesPlansApi = {
   getSalesPlans: async (): Promise<SalesPlan[]> => {
     try {
-      const response = await axios.get<SalesPlansPaginatedResponse>(`${API_URL}/ventas`);
+      const response = await axios.get<SalesPlansPaginatedResponse>(`${API_URL}/planes-venta`);
       const plans = response?.data?.items;
       if (!Array.isArray(plans) || plans.length === 0) {
         console.warn('No sales plans found from API, using mock data');
@@ -134,5 +134,22 @@ export const salesmenApi = {
       },
     });
     return response.data;
+  },
+};
+
+export const deliveriesApi = {
+  getDeliveries: async (): Promise<Delivery[]> => {
+    try {
+      const response = await axios.get<DeliveryPaginatedResponse>(`${API_URL}/entregas`);
+      const deliveries = response?.data?.items;
+      if (!Array.isArray(deliveries) || deliveries.length === 0) {
+        console.warn('No deliveries found from API, using mock data');
+        return mockDeliveries;
+      }
+      return deliveries;
+    } catch (error) {
+      console.error('Error fetching deliveries, using mock data:', error);
+      return mockDeliveries;
+    }
   },
 };

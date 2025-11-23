@@ -144,7 +144,16 @@
   },
   "delivery": {
     "title": "Entregas",
-    "comingSoon": "Gestión de entregas próximamente..."
+    "comingSoon": "Gestión de entregas próximamente...",
+    "searchPlaceholder": "ID de Pedido",
+    "searchLabel": "Buscar",
+    "generateRoutes": "GENERAR RUTAS DE ENTREGA",
+    "id": "ID",
+    "associatedClient": "Cliente Asociado",
+    "destination": "Destino",
+    "eta": "ETA",
+    "associatedSeller": "Vendedor Asociado",
+    "rowsPerPage": "Filas por página:"
   },
   "people": {
     "title": "Personas",

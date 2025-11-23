@@ -69,11 +69,16 @@ export interface User {
 }
 
 export interface SalesPlan {
-  id: number;
+  planId: string;
   nombre: string;
-  periodo: string;
+  periodo: {
+    desde: string;
+    hasta: string;
+  };
   estado: string;
-  cantidad: number;
+  territorios_count: number;
+  metas_count: number;
+  actualizado_en: string;
 }
 
 export interface UsersPaginatedResponse {
@@ -118,6 +123,21 @@ export interface CreateSalesmanRequest {
 export interface SalesmanPaginatedResponse {
   total: number;
   items: Salesman[];
+  page: number;
+  page_size: number;
+}
+
+export interface Delivery {
+  id: number;
+  clienteAsociado: string;
+  destino: string;
+  eta: string;
+  vendedorAsociado: string;
+}
+
+export interface DeliveryPaginatedResponse {
+  total: number;
+  items: Delivery[];
   page: number;
   page_size: number;
 }

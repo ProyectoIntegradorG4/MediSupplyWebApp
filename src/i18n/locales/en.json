@@ -144,7 +144,16 @@
   },
   "delivery": {
     "title": "Delivery",
-    "comingSoon": "Delivery management coming soon..."
+    "comingSoon": "Delivery management coming soon...",
+    "searchPlaceholder": "Order ID",
+    "searchLabel": "Search",
+    "generateRoutes": "GENERATE DELIVERY ROUTES",
+    "id": "ID",
+    "associatedClient": "Associated Client",
+    "destination": "Destination",
+    "eta": "ETA",
+    "associatedSeller": "Associated Seller",
+    "rowsPerPage": "Rows per page:"
   },
   "people": {
     "title": "People",
