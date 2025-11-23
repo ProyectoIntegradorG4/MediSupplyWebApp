@@ -1,6 +1,6 @@
 {
   "name": "medisupplywebapp",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "Medical Supply Inventory Management System",
   "type": "module",
   "scripts": {
