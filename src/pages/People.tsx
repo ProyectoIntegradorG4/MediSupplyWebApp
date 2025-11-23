@@ -35,6 +35,7 @@ import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { salesmenApi, salesPlansApi } from '../services/api';
 import { Spinner, Center } from '@chakra-ui/react';
+import FileUploadModal from '../components/FileUploadModal';
 
 const People = () => {
   const { t } = useTranslation();
@@ -44,6 +45,7 @@ const People = () => {
   const [rowsPerPage, setRowsPerPage] = useState('10');
   const [activeTab, setActiveTab] = useState(0);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isUploadModalOpen, onOpen: onOpenUploadModal, onClose: onCloseUploadModal } = useDisclosure();
   const toast = useToast();
   const queryClient = useQueryClient();
 
@@ -110,6 +112,10 @@ const People = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleUploadSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ['salesPlans'] });
   };
 
   const filteredPlans = Array.isArray(salesPlans)
@@ -198,7 +204,7 @@ const People = () => {
               />
             </Box>
 
-            <Button colorScheme="blue" ml="auto">
+            <Button colorScheme="blue" ml="auto" onClick={onOpenUploadModal}>
               {t('people.uploadSalesPlan')}
             </Button>
           </HStack>
@@ -429,6 +435,14 @@ const People = () => {
           </form>
         </ModalContent>
       </Modal>
+
+      <FileUploadModal
+        isOpen={isUploadModalOpen}
+        onClose={onCloseUploadModal}
+        onUploadSuccess={handleUploadSuccess}
+        uploadFunction={salesPlansApi.uploadSalesPlansCsv}
+        entityType="salesPlans"
+      />
     </Container>
   );
 };

@@ -145,6 +145,8 @@ const Products = () => {
           isOpen={isUploadModalOpen}
           onClose={() => setIsUploadModalOpen(false)}
           onUploadSuccess={handleUploadSuccess}
+          uploadFunction={productsApi.uploadProductsCsv}
+          entityType="products"
         />
         <ProductCreateModal 
           isOpen={isCreateModalOpen}

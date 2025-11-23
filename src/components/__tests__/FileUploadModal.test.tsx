@@ -1,20 +1,16 @@
 import { render, screen, fireEvent, waitFor } from '../../test/test-utils'
 import { vi } from 'vitest'
 import FileUploadModal from '../FileUploadModal'
-import { productsApi } from '../../services/api'
-
-// Mock the API
-vi.mock('../../services/api', () => ({
-  productsApi: {
-    uploadProductsCsv: vi.fn(() => Promise.resolve())
-  }
-}))
 
 describe('FileUploadModal Component', () => {
+  const mockUploadFunction = vi.fn(() => Promise.resolve())
+
   const defaultProps = {
     isOpen: true,
     onClose: vi.fn(),
-    onUploadSuccess: vi.fn()
+    onUploadSuccess: vi.fn(),
+    uploadFunction: mockUploadFunction,
+    entityType: 'products' as const
   }
 
   beforeEach(() => {
@@ -74,8 +70,6 @@ describe('FileUploadModal Component', () => {
   })
 
   it('uploads file successfully', async () => {
-    const mockUpload = vi.mocked(productsApi.uploadProductsCsv)
-
     render(<FileUploadModal {...defaultProps} />)
 
     const file = new File(['test content'], 'test.csv', { type: 'text/csv' })
@@ -91,17 +85,17 @@ describe('FileUploadModal Component', () => {
     fireEvent.click(acceptButton)
 
     await waitFor(() => {
-      expect(mockUpload).toHaveBeenCalledWith(file)
+      expect(mockUploadFunction).toHaveBeenCalledWith(file)
       expect(defaultProps.onUploadSuccess).toHaveBeenCalled()
       expect(defaultProps.onClose).toHaveBeenCalled()
     })
   })
 
   it('handles upload errors', async () => {
-    const mockUpload = vi.mocked(productsApi.uploadProductsCsv)
-    mockUpload.mockRejectedValueOnce(new Error('Upload failed'))
+    const errorUploadFunction = vi.fn(() => Promise.reject(new Error('Upload failed')))
+    const errorProps = { ...defaultProps, uploadFunction: errorUploadFunction }
 
-    render(<FileUploadModal {...defaultProps} />)
+    render(<FileUploadModal {...errorProps} />)
 
     const file = new File(['test content'], 'test.csv', { type: 'text/csv' })
     const input = document.querySelector('input[type="file"]') as HTMLInputElement
@@ -113,6 +107,53 @@ describe('FileUploadModal Component', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Error al cargar el archivo/i)).toBeInTheDocument()
+    })
+  })
+
+  it('shows sales plan title when entityType is salesPlans', () => {
+    const salesPlanProps = { ...defaultProps, entityType: 'salesPlans' as const }
+    render(<FileUploadModal {...salesPlanProps} />)
+
+    expect(screen.getByText('Cargar Plan de Ventas CSV')).toBeInTheDocument()
+  })
+
+  it('shows sales plan success message when entityType is salesPlans', async () => {
+    const salesPlanProps = { ...defaultProps, entityType: 'salesPlans' as const }
+    render(<FileUploadModal {...salesPlanProps} />)
+
+    const file = new File(['test content'], 'test.csv', { type: 'text/csv' })
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement
+
+    fireEvent.change(input, { target: { files: [file] } })
+
+    const acceptButton = screen.getByText('ACEPTAR')
+    fireEvent.click(acceptButton)
+
+    await waitFor(() => {
+      expect(screen.getByText(/Plan de ventas cargado exitosamente/i)).toBeInTheDocument()
+    })
+  })
+
+  it('shows sales plan error message when entityType is salesPlans', async () => {
+    const errorUploadFunction = vi.fn(() => Promise.reject(new Error('Upload failed')))
+    const salesPlanProps = {
+      ...defaultProps,
+      uploadFunction: errorUploadFunction,
+      entityType: 'salesPlans' as const
+    }
+
+    render(<FileUploadModal {...salesPlanProps} />)
+
+    const file = new File(['test content'], 'test.csv', { type: 'text/csv' })
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement
+
+    fireEvent.change(input, { target: { files: [file] } })
+
+    const acceptButton = screen.getByText('ACEPTAR')
+    fireEvent.click(acceptButton)
+
+    await waitFor(() => {
+      expect(screen.getByText(/Error al cargar el plan de ventas/i)).toBeInTheDocument()
     })
   })
 

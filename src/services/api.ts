@@ -4,6 +4,12 @@ import { mockSellers, mockSalesPlans } from '../mocks';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
+// Configure axios to include Authorization header on all requests
+axios.interceptors.request.use((config) => {
+  config.headers.Authorization = 'Bearer test-token';
+  return config;
+});
+
 export const productsApi = {
   getProducts: async (): Promise<Product[]> => {
     const response = await axios.get<PaginatedResponse<Product>>(`${API_URL}/productos`);
@@ -98,6 +104,20 @@ export const salesPlansApi = {
       console.error('Error fetching sales plans, using mock data:', error);
       return mockSalesPlans;
     }
+  },
+
+  // TODO: Update endpoint when backend is ready
+  uploadSalesPlansCsv: async (file: File): Promise<void> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    await axios.post(`${API_URL}/cargamasiva/import-sales-plans`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': 'Bearer test-token',
+        'x-user-role': 'gerente_cuenta',
+      },
+    });
   },
 };
 

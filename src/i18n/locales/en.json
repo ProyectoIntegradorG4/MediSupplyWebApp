@@ -109,11 +109,14 @@
   },
   "fileUpload": {
     "title": "Upload CSV File",
+    "salesPlanTitle": "Upload Sales Plan CSV",
     "dragDrop": "Drag and drop a CSV file here, or click to select",
     "selectedFile": "Selected file",
     "maxSize": "Maximum file size: 3MB",
     "uploadSuccess": "File uploaded successfully",
     "uploadError": "Error uploading file",
+    "salesPlanUploadSuccess": "Sales plan uploaded successfully",
+    "salesPlanUploadError": "Error uploading sales plan",
     "fileTooLarge": "File is too large. Maximum size: 3MB",
     "invalidFileType": "Invalid file type. Only CSV files are allowed"
   },

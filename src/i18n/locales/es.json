@@ -109,11 +109,14 @@
   },
   "fileUpload": {
     "title": "Cargar Archivo CSV",
+    "salesPlanTitle": "Cargar Plan de Ventas CSV",
     "dragDrop": "Arrastra y suelta un archivo CSV aquí, o haz clic para seleccionar",
     "selectedFile": "Archivo seleccionado",
     "maxSize": "Tamaño máximo de archivo: 3MB",
     "uploadSuccess": "Archivo cargado exitosamente",
     "uploadError": "Error al cargar el archivo",
+    "salesPlanUploadSuccess": "Plan de ventas cargado exitosamente",
+    "salesPlanUploadError": "Error al cargar el plan de ventas",
     "fileTooLarge": "El archivo es demasiado grande. Tamaño máximo: 3MB",
     "invalidFileType": "Tipo de archivo inválido. Solo se permiten archivos CSV"
   },
