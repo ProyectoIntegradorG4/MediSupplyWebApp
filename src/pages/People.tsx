@@ -35,7 +35,7 @@ import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { salesmenApi, salesPlansApi } from '../services/api';
 import { Spinner, Center } from '@chakra-ui/react';
-import FileUploadModal from '../components/FileUploadModal';
+import CreateSalesPlanModal from '../components/CreateSalesPlanModal';
 
 const People = () => {
   const { t } = useTranslation();
@@ -45,7 +45,7 @@ const People = () => {
   const [rowsPerPage, setRowsPerPage] = useState('10');
   const [activeTab, setActiveTab] = useState(0);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { isOpen: isUploadModalOpen, onOpen: onOpenUploadModal, onClose: onCloseUploadModal } = useDisclosure();
+  const { isOpen: isCreatePlanModalOpen, onOpen: onOpenCreatePlanModal, onClose: onCloseCreatePlanModal } = useDisclosure();
   const toast = useToast();
   const queryClient = useQueryClient();
 
@@ -104,6 +104,30 @@ const People = () => {
     },
   });
 
+  const createSalesPlanMutation = useMutation({
+    mutationFn: salesPlansApi.createSalesPlan,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['salesPlans'] });
+      toast({
+        title: t('salesPlan.created'),
+        description: t('salesPlan.createdSuccess'),
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      onCloseCreatePlanModal();
+    },
+    onError: (error: any) => {
+      toast({
+        title: t('people.error'),
+        description: error.response?.data?.detail || t('salesPlan.createError'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    },
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     createSalesmanMutation.mutate(formData);
@@ -112,10 +136,6 @@ const People = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleUploadSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: ['salesPlans'] });
   };
 
   const filteredPlans = Array.isArray(salesPlans)
@@ -204,8 +224,8 @@ const People = () => {
               />
             </Box>
 
-            <Button colorScheme="blue" ml="auto" onClick={onOpenUploadModal}>
-              {t('people.uploadSalesPlan')}
+            <Button colorScheme="blue" ml="auto" onClick={onOpenCreatePlanModal}>
+              {t('salesPlan.createSalesPlan')}
             </Button>
           </HStack>
         ) : (
@@ -436,12 +456,11 @@ const People = () => {
         </ModalContent>
       </Modal>
 
-      <FileUploadModal
-        isOpen={isUploadModalOpen}
-        onClose={onCloseUploadModal}
-        onUploadSuccess={handleUploadSuccess}
-        uploadFunction={salesPlansApi.uploadSalesPlansCsv}
-        entityType="salesPlans"
+      <CreateSalesPlanModal
+        isOpen={isCreatePlanModalOpen}
+        onClose={onCloseCreatePlanModal}
+        onSubmit={(data) => createSalesPlanMutation.mutate(data)}
+        isLoading={createSalesPlanMutation.isPending}
       />
     </Container>
   );

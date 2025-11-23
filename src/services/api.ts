@@ -106,6 +106,30 @@ export const salesPlansApi = {
     }
   },
 
+  createSalesPlan: async (salesPlanData: {
+    nombre: string;
+    periodo: {
+      desde: string;
+      hasta: string;
+    };
+    territorios: string[];
+    metas: Array<{
+      productoId: string;
+      territorioId: string;
+      vendedorId: string;
+      objetivo_cantidad: number;
+      objetivo_valor: number;
+      nota: string;
+    }>;
+  }): Promise<SalesPlan> => {
+    const response = await axios.post<SalesPlan>(`${API_URL}/v1/planes-venta/`, salesPlanData, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  },
+
   // TODO: Update endpoint when backend is ready
   uploadSalesPlansCsv: async (file: File): Promise<void> => {
     const formData = new FormData();

@@ -478,7 +478,7 @@ describe('Sales Plans API', () => {
 
       const result = await salesPlansApi.getSalesPlans()
 
-      expect(mockedAxios.get).toHaveBeenCalledWith(`${API_URL}/ventas`)
+      expect(mockedAxios.get).toHaveBeenCalledWith(`${API_URL}/planes-venta`)
       expect(result).toEqual(mockPlans)
     })
 

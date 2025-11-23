@@ -198,5 +198,30 @@
   "reports": {
     "title": "Reportes",
     "comingSoon": "Reportes y análisis próximamente..."
+  },
+  "salesPlan": {
+    "createSalesPlan": "Crear Plan de Ventas",
+    "name": "Nombre del Plan",
+    "namePlaceholder": "Plan Q1 2026",
+    "period": "Periodo",
+    "startDate": "Fecha de Inicio",
+    "endDate": "Fecha de Fin",
+    "territories": "Territorios",
+    "addTerritory": "Agregar Territorio",
+    "territoryPlaceholder": "TERR-ANTIOQUIA",
+    "goals": "Metas",
+    "addGoal": "Agregar Meta",
+    "goal": "Meta",
+    "productId": "ID Producto",
+    "territoryId": "ID Territorio",
+    "sellerId": "ID Vendedor",
+    "targetQuantity": "Cantidad Objetivo",
+    "targetValue": "Valor Objetivo",
+    "note": "Nota",
+    "notePlaceholder": "Meta Q1 2026",
+    "create": "Crear",
+    "created": "Plan de Ventas Creado",
+    "createdSuccess": "El plan de ventas ha sido creado exitosamente",
+    "createError": "Error al crear el plan de ventas"
   }
 }
