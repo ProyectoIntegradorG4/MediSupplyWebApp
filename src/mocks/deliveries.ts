@@ -1,17 +1,14 @@
 import type { Delivery } from '../types/api';
 
 export const mockDeliveries: Delivery[] = [
-  { id: 123, clienteAsociado: 'Empresa 1', destino: 'Bogotá', eta: '10/10/2020', vendedorAsociado: 'Vendedor 1' },
-  { id: 234, clienteAsociado: 'Empresa 2', destino: 'Cali', eta: '10/10/2020', vendedorAsociado: 'Vendedor 1' },
-  { id: 345, clienteAsociado: 'Empresa 3', destino: 'Medellín', eta: '10/10/2020', vendedorAsociado: 'Vendedor 1' },
-  { id: 456, clienteAsociado: 'Empresa 4', destino: 'Ibagué', eta: '10/10/2020', vendedorAsociado: 'Vendedor 1' },
-  { id: 567, clienteAsociado: 'Empresa 5', destino: 'Cartagena', eta: '10/10/2020', vendedorAsociado: 'Vendedor 1' },
-  { id: 678, clienteAsociado: 'Empresa 6', destino: 'Montería', eta: '10/10/2020', vendedorAsociado: 'Vendedor 1' },
-  { id: 789, clienteAsociado: 'Empresa 7', destino: 'Leticia', eta: '10/10/2020', vendedorAsociado: 'Vendedor 1' },
-  { id: 890, clienteAsociado: 'Empresa 8', destino: 'Barranquilla', eta: '10/10/2020', vendedorAsociado: 'Vendedor 1' },
-  { id: 901, clienteAsociado: 'Empresa 9', destino: 'Bucaramanga', eta: '10/10/2020', vendedorAsociado: 'Vendedor 1' },
-  { id: 912, clienteAsociado: 'Empresa 10', destino: 'Pereira', eta: '10/10/2020', vendedorAsociado: 'Vendedor 1' },
-  { id: 923, clienteAsociado: 'Empresa 11', destino: 'Manizales', eta: '10/10/2020', vendedorAsociado: 'Vendedor 1' },
-  { id: 934, clienteAsociado: 'Empresa 12', destino: 'Santa Marta', eta: '10/10/2020', vendedorAsociado: 'Vendedor 1' },
-  { id: 945, clienteAsociado: 'Empresa 13', destino: 'Villavicencio', eta: '10/10/2020', vendedorAsociado: 'Vendedor 1' },
+  { ruta_id: 'ruta-001', vehiculo_id: 'VEH-001', estado: 'borrador', total_pedidos: 5, distancia_total_km: 15.5, duracion_total_minutos: 65, fecha_creacion: '2024-11-20T10:00:00Z', creado_por: 1 },
+  { ruta_id: 'ruta-002', vehiculo_id: 'VEH-002', estado: 'en_curso', total_pedidos: 3, distancia_total_km: 22.3, duracion_total_minutos: 85, fecha_creacion: '2024-11-20T11:00:00Z', creado_por: 1 },
+  { ruta_id: 'ruta-003', vehiculo_id: 'VEH-001', estado: 'completada', total_pedidos: 8, distancia_total_km: 45.2, duracion_total_minutos: 180, fecha_creacion: '2024-11-19T09:00:00Z', creado_por: 2 },
+  { ruta_id: 'ruta-004', vehiculo_id: 'VEH-003', estado: 'borrador', total_pedidos: 4, distancia_total_km: 12.8, duracion_total_minutos: 50, fecha_creacion: '2024-11-20T14:00:00Z', creado_por: 1 },
+  { ruta_id: 'ruta-005', vehiculo_id: 'VEH-002', estado: 'en_curso', total_pedidos: 6, distancia_total_km: 30.1, duracion_total_minutos: 120, fecha_creacion: '2024-11-20T08:00:00Z', creado_por: 2 },
+  { ruta_id: 'ruta-006', vehiculo_id: 'VEH-004', estado: 'completada', total_pedidos: 7, distancia_total_km: 38.5, duracion_total_minutos: 150, fecha_creacion: '2024-11-19T13:00:00Z', creado_por: 1 },
+  { ruta_id: 'ruta-007', vehiculo_id: 'VEH-001', estado: 'borrador', total_pedidos: 2, distancia_total_km: 8.9, duracion_total_minutos: 35, fecha_creacion: '2024-11-20T15:00:00Z', creado_por: 2 },
+  { ruta_id: 'ruta-008', vehiculo_id: 'VEH-003', estado: 'en_curso', total_pedidos: 5, distancia_total_km: 25.6, duracion_total_minutos: 100, fecha_creacion: '2024-11-20T10:30:00Z', creado_por: 1 },
+  { ruta_id: 'ruta-009', vehiculo_id: 'VEH-002', estado: 'completada', total_pedidos: 9, distancia_total_km: 52.3, duracion_total_minutos: 200, fecha_creacion: '2024-11-18T08:00:00Z', creado_por: 2 },
+  { ruta_id: 'ruta-010', vehiculo_id: 'VEH-004', estado: 'borrador', total_pedidos: 3, distancia_total_km: 18.7, duracion_total_minutos: 75, fecha_creacion: '2024-11-20T12:00:00Z', creado_por: 1 },
 ];
