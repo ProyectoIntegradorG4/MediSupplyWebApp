@@ -239,6 +239,9 @@ export const reportsApi = {
       }
     );
     return response.data;
+  },
+};
+
 export const deliveriesApi = {
   getDeliveries: async (): Promise<Delivery[]> => {
     try {

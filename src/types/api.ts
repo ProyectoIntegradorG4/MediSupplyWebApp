@@ -242,6 +242,8 @@ export interface KPISummaryResponse {
   ventas_unidades: number;
   pedidos: number;
   cumplimiento_porcentaje: number | null;
+}
+ 
 export interface Delivery {
   id: number;
   clienteAsociado: string;
