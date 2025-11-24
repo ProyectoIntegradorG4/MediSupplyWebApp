@@ -127,6 +127,123 @@ export interface SalesmanPaginatedResponse {
   page_size: number;
 }
 
+// Dashboard Reportes Vendedores
+export interface Periodo {
+  desde: string;
+  hasta: string;
+}
+
+export interface KPI {
+  label: string;
+  valor: number;
+  unidad: string;
+  tendencia: 'up' | 'down' | 'neutral';
+  variacion: number | null;
+}
+
+export interface ChartDataset {
+  label: string;
+  data: number[];
+  borderColor?: string;
+  backgroundColor?: string | string[];
+  borderWidth?: number;
+  tension?: number;
+  fill?: boolean;
+}
+
+export interface ChartData {
+  labels: string[];
+  datasets: ChartDataset[];
+}
+
+export interface TopVendedor {
+  vendedorId: string;
+  nombre: string;
+  ventas_valor: number;
+  ventas_unidades: number;
+  pedidos: number;
+  cumplimiento_unidades: number | null;
+  cumplimiento_valor: number | null;
+  posicion: number;
+}
+
+export interface DashboardReportResponse {
+  periodo: Periodo;
+  kpis: KPI[];
+  grafico_tendencia: ChartData;
+  grafico_vendedores: ChartData;
+  grafico_cumplimiento: ChartData;
+  top_vendedores: TopVendedor[];
+  alertas: string[];
+}
+
+// Reportes - KPI Vendedor
+export interface TendenciaPoint {
+  fecha: string;
+  valor: number;
+  unidades: number;
+  pedidos: number;
+}
+
+export interface SellerKPIResponse {
+  periodo: Periodo;
+  vendedor: {
+    id: string;
+    nombre: string;
+  };
+  ventas_valor: number;
+  ventas_unidades: number;
+  pedidos: number;
+  cumplimiento_unidades: number | null;
+  cumplimiento_valor: number | null;
+  meta_unidades: number | null;
+  meta_valor: number | null;
+  tendencia: TendenciaPoint[];
+}
+
+// Reportes - Reporte Regional
+export interface RegionSummary {
+  ventas_valor: number;
+  ventas_unidades: number;
+  pedidos: number;
+  cumplimiento_unidades: number | null;
+  cumplimiento_valor: number | null;
+  meta_unidades: number | null;
+  meta_valor: number | null;
+}
+
+export interface RegionRanking {
+  vendedorId: string;
+  nombre: string;
+  ventas_valor: number;
+  ventas_unidades: number;
+  pedidos: number;
+  cumplimiento_unidades: number | null;
+  cumplimiento_valor: number | null;
+  posicion: number;
+}
+
+export interface RegionReportResponse {
+  periodo: Periodo;
+  territorio: {
+    id: string;
+    nombre: string;
+  };
+  resumen: RegionSummary;
+  ranking: RegionRanking[];
+  tendencia: TendenciaPoint[];
+}
+
+// Reportes - Resumen Rápido KPI
+export interface KPISummaryResponse {
+  vendedor_id: number;
+  periodo: Periodo;
+  ventas_valor: number;
+  ventas_unidades: number;
+  pedidos: number;
+  cumplimiento_porcentaje: number | null;
+}
+ 
 export interface Delivery {
   id: number;
   clienteAsociado: string;
