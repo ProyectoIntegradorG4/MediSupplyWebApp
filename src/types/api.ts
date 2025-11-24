@@ -128,16 +128,24 @@ export interface SalesmanPaginatedResponse {
 }
 
 export interface Delivery {
-  id: number;
-  clienteAsociado: string;
-  destino: string;
-  eta: string;
-  vendedorAsociado: string;
+  ruta_id: string;
+  vehiculo_id: string;
+  estado: string;
+  total_pedidos: number;
+  distancia_total_km: number;
+  duracion_total_minutos: number;
+  fecha_creacion: string;
+  creado_por: number;
 }
 
 export interface DeliveryPaginatedResponse {
   total: number;
-  items: Delivery[];
-  page: number;
-  page_size: number;
+  rutas: Delivery[];
+  filtros_aplicados: {
+    estado: string | null;
+    vehiculo_id: string | null;
+    fecha_desde: string | null;
+    fecha_hasta: string | null;
+    limit: string;
+  };
 }
