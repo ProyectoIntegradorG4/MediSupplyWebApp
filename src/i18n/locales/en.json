@@ -109,11 +109,14 @@
   },
   "fileUpload": {
     "title": "Upload CSV File",
+    "salesPlanTitle": "Upload Sales Plan CSV",
     "dragDrop": "Drag and drop a CSV file here, or click to select",
     "selectedFile": "Selected file",
     "maxSize": "Maximum file size: 3MB",
     "uploadSuccess": "File uploaded successfully",
     "uploadError": "Error uploading file",
+    "salesPlanUploadSuccess": "Sales plan uploaded successfully",
+    "salesPlanUploadError": "Error uploading sales plan",
     "fileTooLarge": "File is too large. Maximum size: 3MB",
     "invalidFileType": "Invalid file type. Only CSV files are allowed"
   },
@@ -167,7 +170,16 @@
   },
   "delivery": {
     "title": "Delivery",
-    "comingSoon": "Delivery management coming soon..."
+    "comingSoon": "Delivery management coming soon...",
+    "searchPlaceholder": "Order ID",
+    "searchLabel": "Search",
+    "generateRoutes": "GENERATE DELIVERY ROUTES",
+    "id": "ID",
+    "associatedClient": "Associated Client",
+    "destination": "Destination",
+    "eta": "ETA",
+    "associatedSeller": "Associated Seller",
+    "rowsPerPage": "Rows per page:"
   },
   "people": {
     "title": "People",
@@ -230,5 +242,32 @@
     "sellerRanking": "Seller Ranking",
     "rankingDetails": "Ranking Details",
     "position": "Position"
+    "title": "Reports",
+    "comingSoon": "Reports and analytics coming soon..."
+  },
+  "salesPlan": {
+    "createSalesPlan": "Create Sales Plan",
+    "name": "Plan Name",
+    "namePlaceholder": "Plan Q1 2026",
+    "period": "Period",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "territories": "Territories",
+    "addTerritory": "Add Territory",
+    "territoryPlaceholder": "TERR-ANTIOQUIA",
+    "goals": "Goals",
+    "addGoal": "Add Goal",
+    "goal": "Goal",
+    "productId": "Product ID",
+    "territoryId": "Territory ID",
+    "sellerId": "Seller ID",
+    "targetQuantity": "Target Quantity",
+    "targetValue": "Target Value",
+    "note": "Note",
+    "notePlaceholder": "Goal Q1 2026",
+    "create": "Create",
+    "created": "Sales Plan Created",
+    "createdSuccess": "The sales plan has been created successfully",
+    "createError": "Error creating sales plan"
   }
 }

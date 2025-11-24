@@ -1,9 +1,15 @@
 import axios from 'axios';
-import { Product, Provider, PaginatedResponse, ProviderPaginatedResponse, User, SalesPlan, UsersPaginatedResponse, SalesPlansPaginatedResponse, Salesman, SalesmanPaginatedResponse, CreateSalesmanRequest, DashboardReportResponse, SellerKPIResponse, RegionReportResponse, KPISummaryResponse } from '../types/api';
-import { mockSellers, mockSalesPlans } from '../mocks';
+import { Product, Provider, PaginatedResponse, ProviderPaginatedResponse, User, SalesPlan, UsersPaginatedResponse, SalesPlansPaginatedResponse, Salesman, SalesmanPaginatedResponse, CreateSalesmanRequest, DashboardReportResponse, SellerKPIResponse, RegionReportResponse, KPISummaryResponse, Delivery, DeliveryPaginatedResponse } from '../types/api';
+import { mockSellers, mockSalesPlans, mockDeliveries } from '../mocks';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 const ORDERS_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8007';
+
+// Configure axios to include Authorization header on all requests
+axios.interceptors.request.use((config) => {
+  config.headers.Authorization = 'Bearer test-token';
+  return config;
+});
 
 export const productsApi = {
   getProducts: async (): Promise<Product[]> => {
@@ -88,7 +94,7 @@ export const usersApi = {
 export const salesPlansApi = {
   getSalesPlans: async (): Promise<SalesPlan[]> => {
     try {
-      const response = await axios.get<SalesPlansPaginatedResponse>(`${API_URL}/ventas`);
+      const response = await axios.get<SalesPlansPaginatedResponse>(`${API_URL}/planes-venta`);
       const plans = response?.data?.items;
       if (!Array.isArray(plans) || plans.length === 0) {
         console.warn('No sales plans found from API, using mock data');
@@ -99,6 +105,44 @@ export const salesPlansApi = {
       console.error('Error fetching sales plans, using mock data:', error);
       return mockSalesPlans;
     }
+  },
+
+  createSalesPlan: async (salesPlanData: {
+    nombre: string;
+    periodo: {
+      desde: string;
+      hasta: string;
+    };
+    territorios: string[];
+    metas: Array<{
+      productoId: string;
+      territorioId: string;
+      vendedorId: string;
+      objetivo_cantidad: number;
+      objetivo_valor: number;
+      nota: string;
+    }>;
+  }): Promise<SalesPlan> => {
+    const response = await axios.post<SalesPlan>(`${API_URL}/v1/planes-venta/`, salesPlanData, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  },
+
+  // TODO: Update endpoint when backend is ready
+  uploadSalesPlansCsv: async (file: File): Promise<void> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    await axios.post(`${API_URL}/cargamasiva/import-sales-plans`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': 'Bearer test-token',
+        'x-user-role': 'gerente_cuenta',
+      },
+    });
   },
 };
 
@@ -195,5 +239,19 @@ export const reportsApi = {
       }
     );
     return response.data;
+export const deliveriesApi = {
+  getDeliveries: async (): Promise<Delivery[]> => {
+    try {
+      const response = await axios.get<DeliveryPaginatedResponse>(`${API_URL}/entregas`);
+      const deliveries = response?.data?.items;
+      if (!Array.isArray(deliveries) || deliveries.length === 0) {
+        console.warn('No deliveries found from API, using mock data');
+        return mockDeliveries;
+      }
+      return deliveries;
+    } catch (error) {
+      console.error('Error fetching deliveries, using mock data:', error);
+      return mockDeliveries;
+    }
   },
 };

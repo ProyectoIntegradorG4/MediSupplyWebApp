@@ -109,11 +109,14 @@
   },
   "fileUpload": {
     "title": "Cargar Archivo CSV",
+    "salesPlanTitle": "Cargar Plan de Ventas CSV",
     "dragDrop": "Arrastra y suelta un archivo CSV aquí, o haz clic para seleccionar",
     "selectedFile": "Archivo seleccionado",
     "maxSize": "Tamaño máximo de archivo: 3MB",
     "uploadSuccess": "Archivo cargado exitosamente",
     "uploadError": "Error al cargar el archivo",
+    "salesPlanUploadSuccess": "Plan de ventas cargado exitosamente",
+    "salesPlanUploadError": "Error al cargar el plan de ventas",
     "fileTooLarge": "El archivo es demasiado grande. Tamaño máximo: 3MB",
     "invalidFileType": "Tipo de archivo inválido. Solo se permiten archivos CSV"
   },
@@ -167,7 +170,16 @@
   },
   "delivery": {
     "title": "Entregas",
-    "comingSoon": "Gestión de entregas próximamente..."
+    "comingSoon": "Gestión de entregas próximamente...",
+    "searchPlaceholder": "ID de Pedido",
+    "searchLabel": "Buscar",
+    "generateRoutes": "GENERAR RUTAS DE ENTREGA",
+    "id": "ID",
+    "associatedClient": "Cliente Asociado",
+    "destination": "Destino",
+    "eta": "ETA",
+    "associatedSeller": "Vendedor Asociado",
+    "rowsPerPage": "Filas por página:"
   },
   "people": {
     "title": "Personas",
@@ -230,5 +242,32 @@
     "sellerRanking": "Ranking de Vendedores",
     "rankingDetails": "Detalles del Ranking",
     "position": "Posición"
+    "title": "Reportes",
+    "comingSoon": "Reportes y análisis próximamente..."
+  },
+  "salesPlan": {
+    "createSalesPlan": "Crear Plan de Ventas",
+    "name": "Nombre del Plan",
+    "namePlaceholder": "Plan Q1 2026",
+    "period": "Periodo",
+    "startDate": "Fecha de Inicio",
+    "endDate": "Fecha de Fin",
+    "territories": "Territorios",
+    "addTerritory": "Agregar Territorio",
+    "territoryPlaceholder": "TERR-ANTIOQUIA",
+    "goals": "Metas",
+    "addGoal": "Agregar Meta",
+    "goal": "Meta",
+    "productId": "ID Producto",
+    "territoryId": "ID Territorio",
+    "sellerId": "ID Vendedor",
+    "targetQuantity": "Cantidad Objetivo",
+    "targetValue": "Valor Objetivo",
+    "note": "Nota",
+    "notePlaceholder": "Meta Q1 2026",
+    "create": "Crear",
+    "created": "Plan de Ventas Creado",
+    "createdSuccess": "El plan de ventas ha sido creado exitosamente",
+    "createError": "Error al crear el plan de ventas"
   }
 }

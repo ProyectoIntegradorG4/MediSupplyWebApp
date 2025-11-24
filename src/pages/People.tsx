@@ -35,6 +35,7 @@ import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { salesmenApi, salesPlansApi } from '../services/api';
 import { Spinner, Center } from '@chakra-ui/react';
+import CreateSalesPlanModal from '../components/CreateSalesPlanModal';
 
 const People = () => {
   const { t } = useTranslation();
@@ -44,6 +45,7 @@ const People = () => {
   const [rowsPerPage, setRowsPerPage] = useState('10');
   const [activeTab, setActiveTab] = useState(0);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isCreatePlanModalOpen, onOpen: onOpenCreatePlanModal, onClose: onCloseCreatePlanModal } = useDisclosure();
   const toast = useToast();
   const queryClient = useQueryClient();
 
@@ -95,6 +97,30 @@ const People = () => {
       toast({
         title: t('people.error'),
         description: error.response?.data?.detail || t('people.createSellerError'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    },
+  });
+
+  const createSalesPlanMutation = useMutation({
+    mutationFn: salesPlansApi.createSalesPlan,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['salesPlans'] });
+      toast({
+        title: t('salesPlan.created'),
+        description: t('salesPlan.createdSuccess'),
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      onCloseCreatePlanModal();
+    },
+    onError: (error: any) => {
+      toast({
+        title: t('people.error'),
+        description: error.response?.data?.detail || t('salesPlan.createError'),
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -198,8 +224,8 @@ const People = () => {
               />
             </Box>
 
-            <Button colorScheme="blue" ml="auto">
-              {t('people.uploadSalesPlan')}
+            <Button colorScheme="blue" ml="auto" onClick={onOpenCreatePlanModal}>
+              {t('salesPlan.createSalesPlan')}
             </Button>
           </HStack>
         ) : (
@@ -270,12 +296,12 @@ const People = () => {
                 </Tr>
               ) : (
                 filteredPlans.map((plan, index) => (
-                  <Tr key={plan.id} bg={index % 2 === 0 ? 'gray.50' : 'white'}>
-                    <Td>{plan.id}</Td>
+                  <Tr key={plan.planId} bg={index % 2 === 0 ? 'gray.50' : 'white'}>
+                    <Td>{plan.planId}</Td>
                     <Td>{plan.nombre}</Td>
-                    <Td>{plan.periodo}</Td>
+                    <Td>{`${plan.periodo.desde} - ${plan.periodo.hasta}`}</Td>
                     <Td>{plan.estado}</Td>
-                    <Td isNumeric>{plan.cantidad.toLocaleString()}</Td>
+                    <Td isNumeric>{plan.metas_count.toLocaleString()}</Td>
                   </Tr>
                 ))
               )
@@ -429,6 +455,13 @@ const People = () => {
           </form>
         </ModalContent>
       </Modal>
+
+      <CreateSalesPlanModal
+        isOpen={isCreatePlanModalOpen}
+        onClose={onCloseCreatePlanModal}
+        onSubmit={(data) => createSalesPlanMutation.mutate(data)}
+        isLoading={createSalesPlanMutation.isPending}
+      />
     </Container>
   );
 };

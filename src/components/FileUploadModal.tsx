@@ -14,15 +14,22 @@ import {
 } from '@chakra-ui/react';
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { productsApi } from '../services/api';
 
 interface FileUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
   onUploadSuccess?: () => void;
+  uploadFunction: (file: File) => Promise<void>;
+  entityType?: 'products' | 'salesPlans';
 }
 
-const FileUploadModal = ({ isOpen, onClose, onUploadSuccess }: FileUploadModalProps) => {
+const FileUploadModal = ({
+  isOpen,
+  onClose,
+  onUploadSuccess,
+  uploadFunction,
+  entityType = 'products'
+}: FileUploadModalProps) => {
   const { t } = useTranslation();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -59,11 +66,15 @@ const FileUploadModal = ({ isOpen, onClose, onUploadSuccess }: FileUploadModalPr
 
     setIsUploading(true);
     try {
-      await productsApi.uploadProductsCsv(selectedFile);
+      await uploadFunction(selectedFile);
+
+      const successKey = entityType === 'salesPlans'
+        ? 'fileUpload.salesPlanUploadSuccess'
+        : 'fileUpload.uploadSuccess';
 
       toast({
         title: t('common.success'),
-        description: t('fileUpload.uploadSuccess'),
+        description: t(successKey),
         status: 'success',
         duration: 3000,
       });
@@ -75,9 +86,13 @@ const FileUploadModal = ({ isOpen, onClose, onUploadSuccess }: FileUploadModalPr
       setSelectedFile(null);
       onClose();
     } catch (error) {
+      const errorKey = entityType === 'salesPlans'
+        ? 'fileUpload.salesPlanUploadError'
+        : 'fileUpload.uploadError';
+
       toast({
         title: t('common.error'),
-        description: t('fileUpload.uploadError'),
+        description: t(errorKey),
         status: 'error',
         duration: 3000,
       });
@@ -116,11 +131,17 @@ const FileUploadModal = ({ isOpen, onClose, onUploadSuccess }: FileUploadModalPr
     event.preventDefault();
   };
 
+  const getModalTitle = () => {
+    return entityType === 'salesPlans'
+      ? t('fileUpload.salesPlanTitle')
+      : t('fileUpload.title');
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{t('fileUpload.title')}</ModalHeader>
+        <ModalHeader>{getModalTitle()}</ModalHeader>
         <ModalBody>
           <VStack spacing={4}>
             <Text>
