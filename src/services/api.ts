@@ -169,7 +169,7 @@ export const salesmenApi = {
 export const dashboardApi = {
   getSalesDashboard: async (desde: string, hasta: string): Promise<DashboardReportResponse> => {
     const response = await axios.get<DashboardReportResponse>(
-      `${ORDERS_API_URL}/api/v1/reportes/vendedores/dashboard`,
+      `${ORDERS_API_URL}/reportes/vendedores/dashboard`,
       {
         params: {
           desde,
@@ -191,7 +191,7 @@ export const reportsApi = {
     productoId?: string
   ): Promise<SellerKPIResponse> => {
     const response = await axios.get<SellerKPIResponse>(
-      `${ORDERS_API_URL}/api/v1/reportes/vendedores/kpi`,
+      `${ORDERS_API_URL}/reportes/vendedores/kpi`,
       {
         params: {
           vendedor_id: vendedorId,
@@ -213,7 +213,7 @@ export const reportsApi = {
     productoId?: string
   ): Promise<RegionReportResponse> => {
     const response = await axios.get<RegionReportResponse>(
-      `${ORDERS_API_URL}/api/v1/reportes/vendedores/region`,
+      `${ORDERS_API_URL}/reportes/vendedores/region`,
       {
         params: {
           territorio_id: territorioId,
@@ -233,7 +233,7 @@ export const reportsApi = {
     hasta: string
   ): Promise<KPISummaryResponse> => {
     const response = await axios.get<KPISummaryResponse>(
-      `${ORDERS_API_URL}/api/v1/reportes/vendedores/kpi/resumen`,
+      `${ORDERS_API_URL}/reportes/vendedores/kpi/resumen`,
       {
         params: {
           vendedor_id: vendedorId,
