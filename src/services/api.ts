@@ -1,8 +1,9 @@
 import axios from 'axios';
-import { Product, Provider, PaginatedResponse, ProviderPaginatedResponse, User, SalesPlan, UsersPaginatedResponse, SalesPlansPaginatedResponse, Salesman, SalesmanPaginatedResponse, CreateSalesmanRequest } from '../types/api';
+import { Product, Provider, PaginatedResponse, ProviderPaginatedResponse, User, SalesPlan, UsersPaginatedResponse, SalesPlansPaginatedResponse, Salesman, SalesmanPaginatedResponse, CreateSalesmanRequest, DashboardReportResponse, SellerKPIResponse, RegionReportResponse, KPISummaryResponse } from '../types/api';
 import { mockSellers, mockSalesPlans } from '../mocks';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+const ORDERS_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8007';
 
 export const productsApi = {
   getProducts: async (): Promise<Product[]> => {
@@ -113,6 +114,86 @@ export const salesmenApi = {
         'Content-Type': 'application/json',
       },
     });
+    return response.data;
+  },
+};
+
+export const dashboardApi = {
+  getSalesDashboard: async (desde: string, hasta: string): Promise<DashboardReportResponse> => {
+    const response = await axios.get<DashboardReportResponse>(
+      `${ORDERS_API_URL}/api/v1/reportes/vendedores/dashboard`,
+      {
+        params: {
+          desde,
+          hasta,
+        },
+      }
+    );
+    return response.data;
+  },
+};
+
+export const reportsApi = {
+  // KPI de Vendedor individual
+  getSellerKPI: async (
+    vendedorId: string,
+    desde: string,
+    hasta: string,
+    territorioId?: string,
+    productoId?: string
+  ): Promise<SellerKPIResponse> => {
+    const response = await axios.get<SellerKPIResponse>(
+      `${ORDERS_API_URL}/api/v1/reportes/vendedores/kpi`,
+      {
+        params: {
+          vendedor_id: vendedorId,
+          desde,
+          hasta,
+          ...(territorioId && { territorio_id: territorioId }),
+          ...(productoId && { producto_id: productoId }),
+        },
+      }
+    );
+    return response.data;
+  },
+
+  // Reporte Regional
+  getRegionReport: async (
+    territorioId: string,
+    desde: string,
+    hasta: string,
+    productoId?: string
+  ): Promise<RegionReportResponse> => {
+    const response = await axios.get<RegionReportResponse>(
+      `${ORDERS_API_URL}/api/v1/reportes/vendedores/region`,
+      {
+        params: {
+          territorio_id: territorioId,
+          desde,
+          hasta,
+          ...(productoId && { producto_id: productoId }),
+        },
+      }
+    );
+    return response.data;
+  },
+
+  // Resumen Rápido KPI
+  getKPISummary: async (
+    vendedorId: string,
+    desde: string,
+    hasta: string
+  ): Promise<KPISummaryResponse> => {
+    const response = await axios.get<KPISummaryResponse>(
+      `${ORDERS_API_URL}/api/v1/reportes/vendedores/kpi/resumen`,
+      {
+        params: {
+          vendedor_id: vendedorId,
+          desde,
+          hasta,
+        },
+      }
+    );
     return response.data;
   },
 };
