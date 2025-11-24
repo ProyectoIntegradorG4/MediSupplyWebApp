@@ -15,17 +15,23 @@ import {
   HStack,
   Select,
   Text,
+  useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { Delivery as DeliveryType } from '../types/api';
 import { deliveriesApi } from '../services/api';
+import GenerateRouteModal from '../components/GenerateRouteModal';
 
 const Delivery = () => {
   const { t } = useTranslation();
+  const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [deliveries, setDeliveries] = useState<DeliveryType[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
     const fetchDeliveries = async () => {
@@ -37,7 +43,8 @@ const Delivery = () => {
 
   // Filter deliveries based on search term
   const filteredDeliveries = deliveries.filter((delivery) =>
-    delivery.id.toString().includes(searchTerm)
+    delivery.ruta_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    delivery.vehiculo_id.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Pagination logic
@@ -45,9 +52,33 @@ const Delivery = () => {
   const endIndex = startIndex + rowsPerPage;
   const currentDeliveries = filteredDeliveries.slice(startIndex, endIndex);
 
-  const handleGenerateRoutes = () => {
-    // TODO: Implement route generation logic
-    console.log('Generate delivery routes');
+  const handleGenerateRoutes = async (routeData: any) => {
+    setIsGenerating(true);
+    try {
+      const result = await deliveriesApi.generateRoutes(routeData);
+      toast({
+        title: t('routes.routesGenerated'),
+        description: t('routes.routesGeneratedSuccess'),
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      console.log('Generated routes:', result);
+      onClose();
+      // Refresh deliveries list
+      const data = await deliveriesApi.getDeliveries();
+      setDeliveries(data);
+    } catch (error: any) {
+      toast({
+        title: t('common.error'),
+        description: error.response?.data?.detail || t('routes.routesGeneratedError'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -69,7 +100,7 @@ const Delivery = () => {
         </FormControl>
         <Button
           colorScheme="blue"
-          onClick={handleGenerateRoutes}
+          onClick={onOpen}
           alignSelf="flex-end"
         >
           {t('delivery.generateRoutes')}
@@ -81,21 +112,45 @@ const Delivery = () => {
         <Table variant="simple">
           <Thead bg="gray.50">
             <Tr>
-              <Th>{t('delivery.id')}</Th>
-              <Th>{t('delivery.associatedClient')}</Th>
-              <Th>{t('delivery.destination')}</Th>
-              <Th>{t('delivery.eta')}</Th>
-              <Th>{t('delivery.associatedSeller')}</Th>
+              <Th>{t('delivery.routeId')}</Th>
+              <Th>{t('delivery.vehicleId')}</Th>
+              <Th>{t('delivery.status')}</Th>
+              <Th isNumeric>{t('delivery.totalOrders')}</Th>
+              <Th isNumeric>{t('delivery.totalDistance')}</Th>
+              <Th isNumeric>{t('delivery.totalDuration')}</Th>
+              <Th>{t('delivery.createdAt')}</Th>
             </Tr>
           </Thead>
           <Tbody>
             {currentDeliveries.map((delivery) => (
-              <Tr key={delivery.id}>
-                <Td>{delivery.id}</Td>
-                <Td>{delivery.clienteAsociado}</Td>
-                <Td>{delivery.destino}</Td>
-                <Td>{delivery.eta}</Td>
-                <Td>{delivery.vendedorAsociado}</Td>
+              <Tr key={delivery.ruta_id}>
+                <Td>{delivery.ruta_id}</Td>
+                <Td>{delivery.vehiculo_id}</Td>
+                <Td>
+                  <Text
+                    px={2}
+                    py={1}
+                    borderRadius="md"
+                    fontSize="sm"
+                    display="inline-block"
+                    bg={
+                      delivery.estado === 'completada' ? 'green.100' :
+                      delivery.estado === 'en_curso' ? 'blue.100' :
+                      'gray.100'
+                    }
+                    color={
+                      delivery.estado === 'completada' ? 'green.800' :
+                      delivery.estado === 'en_curso' ? 'blue.800' :
+                      'gray.800'
+                    }
+                  >
+                    {delivery.estado}
+                  </Text>
+                </Td>
+                <Td isNumeric>{delivery.total_pedidos}</Td>
+                <Td isNumeric>{delivery.distancia_total_km.toFixed(2)} km</Td>
+                <Td isNumeric>{delivery.duracion_total_minutos} min</Td>
+                <Td>{new Date(delivery.fecha_creacion).toLocaleString()}</Td>
               </Tr>
             ))}
           </Tbody>
@@ -124,6 +179,13 @@ const Delivery = () => {
           {startIndex + 1}-{Math.min(endIndex, filteredDeliveries.length)} of {filteredDeliveries.length}
         </Text>
       </HStack>
+
+      <GenerateRouteModal
+        isOpen={isOpen}
+        onClose={onClose}
+        onSubmit={handleGenerateRoutes}
+        isLoading={isGenerating}
+      />
     </Box>
   );
 };

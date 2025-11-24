@@ -5,9 +5,13 @@ import { mockSellers, mockSalesPlans, mockDeliveries } from '../mocks';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 const ORDERS_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8007';
 
-// Configure axios to include Authorization header on all requests
+// Configure axios to include Authorization header on most requests
+// Skip for logistics endpoints which use custom headers
 axios.interceptors.request.use((config) => {
-  config.headers.Authorization = 'Bearer test-token';
+  // Don't add Authorization header for logistics endpoints
+  if (!config.url?.includes('/logistica/')) {
+    config.headers.Authorization = 'Bearer test-token';
+  }
   return config;
 });
 
@@ -245,8 +249,14 @@ export const reportsApi = {
 export const deliveriesApi = {
   getDeliveries: async (): Promise<Delivery[]> => {
     try {
-      const response = await axios.get<DeliveryPaginatedResponse>(`${API_URL}/entregas`);
-      const deliveries = response?.data?.items;
+      const response = await axios.get<DeliveryPaginatedResponse>(`${API_URL}/logistica/rutas`, {
+        headers: {
+          'rol-usuario': 'admin',
+          'usuario-id': '1',
+          'nit-usuario': '111111111-1',
+        },
+      });
+      const deliveries = response?.data?.rutas;
       if (!Array.isArray(deliveries) || deliveries.length === 0) {
         console.warn('No deliveries found from API, using mock data');
         return mockDeliveries;
@@ -256,5 +266,41 @@ export const deliveriesApi = {
       console.error('Error fetching deliveries, using mock data:', error);
       return mockDeliveries;
     }
+  },
+
+  generateRoutes: async (routeData: {
+    objetivo: string;
+    vehiculos: Array<{
+      id: string;
+      capacidad_volumen: number;
+      capacidad_peso: number;
+      cadena_frio: boolean;
+      depot: {
+        lat: number;
+        lon: number;
+      };
+      duracion_maxima_minutos: number;
+    }>;
+    pedidos: Array<{
+      id: string;
+      lat: number;
+      lon: number;
+      ventana_inicio: string;
+      ventana_fin: string;
+      tiempo_servicio_minutos: number;
+      requiere_frio: boolean;
+      volumen: number;
+      peso: number;
+    }>;
+  }): Promise<any> => {
+    const response = await axios.post(`${API_URL}/logistica/rutas/generar`, routeData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'rol-usuario': 'admin',
+        'usuario-id': '1',
+        'nit-usuario': '111111111-1',
+      },
+    });
+    return response.data;
   },
 };
