@@ -18,23 +18,50 @@ describe('Providers API', () => {
     it('should fetch providers successfully', async () => {
       const mockProviders: Provider[] = [
         {
-          id: 123,
-          nombre: 'Laboratorio 1',
-          pais: 'Colombia',
-          rating: 4.2,
-          activo: true
+          proveedor_id: 'b0868c58-9f91-4ba6-9faf-41a19fe3e8cc',
+          razon_social: 'Distribuidora Médica S.A.',
+          nit: '900123456-7',
+          tipo_proveedor: 'distribuidor',
+          email: 'contacto@medidistribuidora.com',
+          telefono: '+57 1 234 5678',
+          direccion: 'Calle 100 #15-20',
+          ciudad: 'Bogotá',
+          pais: 'colombia',
+          certificaciones: [],
+          estado: 'activo',
+          validacion_regulatoria: 'en_revision',
+          calificacion: null,
+          tiempo_entrega_promedio: null,
+          created_at: '2025-11-03T03:55:38.552601Z',
+          updated_at: '2025-11-03T03:55:38.552606Z',
+          version: 0
         },
         {
-          id: 234,
-          nombre: 'Laboratorio 2',
-          pais: 'México',
-          rating: 3.5,
-          activo: false
+          proveedor_id: 'c1868c58-9f91-4ba6-9faf-41a19fe3e8dd',
+          razon_social: 'Farmacéutica del Sur Ltda.',
+          nit: '900234567-8',
+          tipo_proveedor: 'laboratorio',
+          email: 'contacto@farmasur.com',
+          telefono: '+57 2 345 6789',
+          direccion: 'Carrera 50 #20-30',
+          ciudad: 'Medellín',
+          pais: 'colombia',
+          certificaciones: ['ISO 9001'],
+          estado: 'activo',
+          validacion_regulatoria: 'aprobado',
+          calificacion: 4.5,
+          tiempo_entrega_promedio: 3,
+          created_at: '2025-11-03T04:00:00.000000Z',
+          updated_at: '2025-11-03T04:00:00.000000Z',
+          version: 0
         }
       ]
 
       mockedAxios.get.mockResolvedValueOnce({
         data: {
+          total: 2,
+          skip: 0,
+          limit: 10,
           data: mockProviders
         }
       })
@@ -55,6 +82,9 @@ describe('Providers API', () => {
     it('should use configured API URL', async () => {
       mockedAxios.get.mockResolvedValueOnce({
         data: {
+          total: 0,
+          skip: 0,
+          limit: 10,
           data: []
         }
       })
@@ -68,15 +98,27 @@ describe('Providers API', () => {
   describe('createProvider', () => {
     it('should create a provider successfully', async () => {
       const newProvider = {
-        nombre: 'Laboratorio 3',
-        pais: 'Brasil',
-        rating: 4.5,
-        activo: true
+        razon_social: 'Nueva Distribuidora S.A.',
+        nit: '900345678-9',
+        tipo_proveedor: 'distribuidor',
+        email: 'contacto@nuevadistribuidora.com',
+        telefono: '+57 3 456 7890',
+        direccion: 'Avenida 80 #25-35',
+        ciudad: 'Cali',
+        pais: 'colombia',
+        certificaciones: ['ISO 9001'],
+        estado: 'activo',
+        validacion_regulatoria: 'en_revision',
+        calificacion: null,
+        tiempo_entrega_promedio: null
       }
 
       const createdProvider: Provider = {
         ...newProvider,
-        id: 345
+        proveedor_id: 'd2868c58-9f91-4ba6-9faf-41a19fe3e8ee',
+        created_at: '2025-11-03T05:00:00.000000Z',
+        updated_at: '2025-11-03T05:00:00.000000Z',
+        version: 0
       }
 
       mockedAxios.post.mockResolvedValueOnce({
@@ -87,17 +129,32 @@ describe('Providers API', () => {
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
         `${API_URL}/proveedores/`,
-        newProvider
+        newProvider,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Idempotency-Key': 'Administrador de Compras',
+          },
+        }
       )
       expect(result).toEqual(createdProvider)
     })
 
     it('should handle create provider errors', async () => {
       const newProvider = {
-        nombre: 'Laboratorio 3',
-        pais: 'Brasil',
-        rating: 4.5,
-        activo: true
+        razon_social: 'Nueva Distribuidora S.A.',
+        nit: '900345678-9',
+        tipo_proveedor: 'distribuidor',
+        email: 'contacto@nuevadistribuidora.com',
+        telefono: '+57 3 456 7890',
+        direccion: 'Avenida 80 #25-35',
+        ciudad: 'Cali',
+        pais: 'colombia',
+        certificaciones: ['ISO 9001'],
+        estado: 'activo',
+        validacion_regulatoria: 'en_revision',
+        calificacion: null,
+        tiempo_entrega_promedio: null
       }
 
       const errorMessage = 'Validation Error'

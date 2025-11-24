@@ -1,11 +1,29 @@
-import { Box, Flex, Heading, Spacer } from '@chakra-ui/react'
+import { Box, Flex, Heading, Spacer, IconButton } from '@chakra-ui/react'
+import { HamburgerIcon } from '@chakra-ui/icons'
+import LanguageSwitcher from './LanguageSwitcher'
 
-function Navbar() {
+interface NavbarProps {
+  onMenuClick: () => void
+}
+
+function Navbar({ onMenuClick }: NavbarProps) {
   return (
-    <Box bg="medisupply.200" px={4} py={3} boxShadow="sm">
+    <Box bg="blue.500" px={6} py={4} boxShadow="sm">
       <Flex alignItems="center">
-        <Heading size="md" color="medisupply.50">MediSupply</Heading>
+        <IconButton
+          aria-label="Open menu"
+          icon={<HamburgerIcon />}
+          onClick={onMenuClick}
+          variant="ghost"
+          color="white"
+          _hover={{ bg: 'blue.600' }}
+          mr={4}
+        />
+        <Heading size="md" color="white">MediSupply</Heading>
         <Spacer />
+        <Box color="white">
+          <LanguageSwitcher />
+        </Box>
       </Flex>
     </Box>
   )

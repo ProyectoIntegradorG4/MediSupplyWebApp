@@ -1,7 +1,15 @@
 import axios from 'axios';
-import { ApiResponse, Product, Provider, PaginatedResponse } from '../types/api';
+import { Product, Provider, PaginatedResponse, ProviderPaginatedResponse, User, SalesPlan, UsersPaginatedResponse, SalesPlansPaginatedResponse, Salesman, SalesmanPaginatedResponse, CreateSalesmanRequest, DashboardReportResponse, SellerKPIResponse, RegionReportResponse, KPISummaryResponse, Delivery, DeliveryPaginatedResponse } from '../types/api';
+import { mockSellers, mockSalesPlans, mockDeliveries } from '../mocks';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+const ORDERS_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8007';
+
+// Configure axios to include Authorization header on all requests
+axios.interceptors.request.use((config) => {
+  config.headers.Authorization = 'Bearer test-token';
+  return config;
+});
 
 export const productsApi = {
   getProducts: async (): Promise<Product[]> => {
@@ -35,14 +43,15 @@ export const productsApi = {
     return response.data;
   },
 
-  uploadProductsCsv: async (file: File, createdBy: string): Promise<void> => {
+  uploadProductsCsv: async (file: File): Promise<void> => {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('created_by', createdBy);
 
-    await axios.post(`${API_URL}/productos/upload-csv`, formData, {
+    await axios.post(`${API_URL}/cargamasiva/import-products`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
+        'Authorization': 'Bearer test-token',
+        'x-user-role': 'gerente_cuenta',
       },
     });
   },
@@ -50,12 +59,202 @@ export const productsApi = {
 
 export const providersApi = {
   getProviders: async (): Promise<Provider[]> => {
-    const response = await axios.get<ApiResponse<Provider[]>>(`${API_URL}/proveedores/`);
+    const response = await axios.get<ProviderPaginatedResponse>(`${API_URL}/proveedores/`);
     return response.data.data;
   },
 
-  createProvider: async (provider: Omit<Provider, 'id'>): Promise<Provider> => {
-    const response = await axios.post<Provider>(`${API_URL}/proveedores/`, provider);
+  createProvider: async (provider: Omit<Provider, 'proveedor_id' | 'created_at' | 'updated_at' | 'version'>): Promise<Provider> => {
+    const response = await axios.post<Provider>(`${API_URL}/proveedores/`, provider, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Idempotency-Key': 'Administrador de Compras',
+      },
+    });
     return response.data;
+  },
+};
+
+export const usersApi = {
+  getUsers: async (): Promise<User[]> => {
+    try {
+      const response = await axios.get<UsersPaginatedResponse>(`${API_URL}/users`);
+      const users = response?.data?.items;
+      if (!Array.isArray(users) || users.length === 0) {
+        console.warn('No users found from API, using mock data');
+        return mockSellers;
+      }
+      return users;
+    } catch (error) {
+      console.error('Error fetching users, using mock data:', error);
+      return mockSellers;
+    }
+  },
+};
+
+export const salesPlansApi = {
+  getSalesPlans: async (): Promise<SalesPlan[]> => {
+    try {
+      const response = await axios.get<SalesPlansPaginatedResponse>(`${API_URL}/planes-venta`);
+      const plans = response?.data?.items;
+      if (!Array.isArray(plans) || plans.length === 0) {
+        console.warn('No sales plans found from API, using mock data');
+        return mockSalesPlans;
+      }
+      return plans;
+    } catch (error) {
+      console.error('Error fetching sales plans, using mock data:', error);
+      return mockSalesPlans;
+    }
+  },
+
+  createSalesPlan: async (salesPlanData: {
+    nombre: string;
+    periodo: {
+      desde: string;
+      hasta: string;
+    };
+    territorios: string[];
+    metas: Array<{
+      productoId: string;
+      territorioId: string;
+      vendedorId: string;
+      objetivo_cantidad: number;
+      objetivo_valor: number;
+      nota: string;
+    }>;
+  }): Promise<SalesPlan> => {
+    const response = await axios.post<SalesPlan>(`${API_URL}/v1/planes-venta/`, salesPlanData, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  },
+
+  // TODO: Update endpoint when backend is ready
+  uploadSalesPlansCsv: async (file: File): Promise<void> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    await axios.post(`${API_URL}/cargamasiva/import-sales-plans`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': 'Bearer test-token',
+        'x-user-role': 'gerente_cuenta',
+      },
+    });
+  },
+};
+
+export const salesmenApi = {
+  getSalesmen: async (): Promise<Salesman[]> => {
+    const response = await axios.get<SalesmanPaginatedResponse>(`${API_URL}/vendedores`);
+    return response.data.items;
+  },
+
+  createSalesman: async (salesmanData: CreateSalesmanRequest): Promise<Salesman> => {
+    const response = await axios.post<Salesman>(`${API_URL}/vendedores`, salesmanData, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  },
+};
+
+export const dashboardApi = {
+  getSalesDashboard: async (desde: string, hasta: string): Promise<DashboardReportResponse> => {
+    const response = await axios.get<DashboardReportResponse>(
+      `${ORDERS_API_URL}/api/v1/reportes/vendedores/dashboard`,
+      {
+        params: {
+          desde,
+          hasta,
+        },
+      }
+    );
+    return response.data;
+  },
+};
+
+export const reportsApi = {
+  // KPI de Vendedor individual
+  getSellerKPI: async (
+    vendedorId: string,
+    desde: string,
+    hasta: string,
+    territorioId?: string,
+    productoId?: string
+  ): Promise<SellerKPIResponse> => {
+    const response = await axios.get<SellerKPIResponse>(
+      `${ORDERS_API_URL}/api/v1/reportes/vendedores/kpi`,
+      {
+        params: {
+          vendedor_id: vendedorId,
+          desde,
+          hasta,
+          ...(territorioId && { territorio_id: territorioId }),
+          ...(productoId && { producto_id: productoId }),
+        },
+      }
+    );
+    return response.data;
+  },
+
+  // Reporte Regional
+  getRegionReport: async (
+    territorioId: string,
+    desde: string,
+    hasta: string,
+    productoId?: string
+  ): Promise<RegionReportResponse> => {
+    const response = await axios.get<RegionReportResponse>(
+      `${ORDERS_API_URL}/api/v1/reportes/vendedores/region`,
+      {
+        params: {
+          territorio_id: territorioId,
+          desde,
+          hasta,
+          ...(productoId && { producto_id: productoId }),
+        },
+      }
+    );
+    return response.data;
+  },
+
+  // Resumen Rápido KPI
+  getKPISummary: async (
+    vendedorId: string,
+    desde: string,
+    hasta: string
+  ): Promise<KPISummaryResponse> => {
+    const response = await axios.get<KPISummaryResponse>(
+      `${ORDERS_API_URL}/api/v1/reportes/vendedores/kpi/resumen`,
+      {
+        params: {
+          vendedor_id: vendedorId,
+          desde,
+          hasta,
+        },
+      }
+    );
+    return response.data;
+  },
+};
+
+export const deliveriesApi = {
+  getDeliveries: async (): Promise<Delivery[]> => {
+    try {
+      const response = await axios.get<DeliveryPaginatedResponse>(`${API_URL}/entregas`);
+      const deliveries = response?.data?.items;
+      if (!Array.isArray(deliveries) || deliveries.length === 0) {
+        console.warn('No deliveries found from API, using mock data');
+        return mockDeliveries;
+      }
+      return deliveries;
+    } catch (error) {
+      console.error('Error fetching deliveries, using mock data:', error);
+      return mockDeliveries;
+    }
   },
 };

@@ -13,15 +13,24 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { useState, useRef } from 'react';
-import { productsApi } from '../services/api';
+import { useTranslation } from 'react-i18next';
 
 interface FileUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
   onUploadSuccess?: () => void;
+  uploadFunction: (file: File) => Promise<void>;
+  entityType?: 'products' | 'salesPlans';
 }
 
-const FileUploadModal = ({ isOpen, onClose, onUploadSuccess }: FileUploadModalProps) => {
+const FileUploadModal = ({
+  isOpen,
+  onClose,
+  onUploadSuccess,
+  uploadFunction,
+  entityType = 'products'
+}: FileUploadModalProps) => {
+  const { t } = useTranslation();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -32,8 +41,8 @@ const FileUploadModal = ({ isOpen, onClose, onUploadSuccess }: FileUploadModalPr
     if (file) {
       if (file.size > 3 * 1024 * 1024) { // 3MB limit
         toast({
-          title: 'Error',
-          description: 'El archivo no debe superar los 3MB',
+          title: t('common.error'),
+          description: t('fileUpload.fileTooLarge'),
           status: 'error',
           duration: 3000,
         });
@@ -41,8 +50,8 @@ const FileUploadModal = ({ isOpen, onClose, onUploadSuccess }: FileUploadModalPr
       }
       if (!file.name.endsWith('.csv')) {
         toast({
-          title: 'Error',
-          description: 'Solo se permiten archivos CSV',
+          title: t('common.error'),
+          description: t('fileUpload.invalidFileType'),
           status: 'error',
           duration: 3000,
         });
@@ -57,11 +66,15 @@ const FileUploadModal = ({ isOpen, onClose, onUploadSuccess }: FileUploadModalPr
 
     setIsUploading(true);
     try {
-      await productsApi.uploadProductsCsv(selectedFile, 'user123'); // TODO: Replace with actual user
+      await uploadFunction(selectedFile);
+
+      const successKey = entityType === 'salesPlans'
+        ? 'fileUpload.salesPlanUploadSuccess'
+        : 'fileUpload.uploadSuccess';
 
       toast({
-        title: 'Éxito',
-        description: 'Archivo cargado correctamente',
+        title: t('common.success'),
+        description: t(successKey),
         status: 'success',
         duration: 3000,
       });
@@ -73,9 +86,13 @@ const FileUploadModal = ({ isOpen, onClose, onUploadSuccess }: FileUploadModalPr
       setSelectedFile(null);
       onClose();
     } catch (error) {
+      const errorKey = entityType === 'salesPlans'
+        ? 'fileUpload.salesPlanUploadError'
+        : 'fileUpload.uploadError';
+
       toast({
-        title: 'Error',
-        description: 'Error al cargar el archivo',
+        title: t('common.error'),
+        description: t(errorKey),
         status: 'error',
         duration: 3000,
       });
@@ -114,16 +131,21 @@ const FileUploadModal = ({ isOpen, onClose, onUploadSuccess }: FileUploadModalPr
     event.preventDefault();
   };
 
+  const getModalTitle = () => {
+    return entityType === 'salesPlans'
+      ? t('fileUpload.salesPlanTitle')
+      : t('fileUpload.title');
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Carga de Archivos</ModalHeader>
+        <ModalHeader>{getModalTitle()}</ModalHeader>
         <ModalBody>
           <VStack spacing={4}>
             <Text>
-              Por favor seleccione el archivo para la carga másiva en formato .csv y con un tamaño no mayor
-              a 3MB.
+              {t('fileUpload.maxSize')}
             </Text>
             <Box
               border="2px dashed"
@@ -155,7 +177,7 @@ const FileUploadModal = ({ isOpen, onClose, onUploadSuccess }: FileUploadModalPr
 
         <ModalFooter gap={3}>
           <Button variant="outline" onClick={onClose}>
-            CANCELAR
+            {t('common.cancel')}
           </Button>
           <Button
             colorScheme="blue"
@@ -163,7 +185,7 @@ const FileUploadModal = ({ isOpen, onClose, onUploadSuccess }: FileUploadModalPr
             isLoading={isUploading}
             isDisabled={!selectedFile}
           >
-            ACEPTAR
+            {t('common.accept')}
           </Button>
         </ModalFooter>
       </ModalContent>

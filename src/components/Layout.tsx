@@ -1,17 +1,21 @@
-import { Box, Container } from '@chakra-ui/react'
+import { Box, useDisclosure } from '@chakra-ui/react'
 import Navbar from './Navbar'
+import Sidebar from './Sidebar'
 
 interface LayoutProps {
   children: React.ReactNode
 }
 
 function Layout({ children }: LayoutProps) {
+  const { isOpen, onOpen, onClose } = useDisclosure()
+
   return (
-    <Box>
-      <Navbar />
-      <Container maxW="container.xl" py={6}>
+    <Box minHeight="100vh">
+      <Navbar onMenuClick={onOpen} />
+      <Sidebar isOpen={isOpen} onClose={onClose} />
+      <Box p={6}>
         {children}
-      </Container>
+      </Box>
     </Box>
   )
 }

@@ -16,6 +16,7 @@ import {
   FormErrorMessage,
 } from '@chakra-ui/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Product } from '../types/api';
 import { productsApi } from '../services/api';
 
@@ -35,10 +36,11 @@ interface FormData {
 }
 
 const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreateModalProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<FormData>({
-    name: 'Producto 1',
+    name: t('products.defaultProductName'),
     sku: '',
-    location: 'Bodega 1',
+    location: t('products.defaultLocation'),
     ubicacion: '',
     stock: '',
     fechaVencimiento: '',
@@ -60,19 +62,19 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
     const newErrors: Partial<FormData> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'El nombre es requerido';
+      newErrors.name = t('products.nameRequired');
     }
     if (!formData.sku.trim()) {
-      newErrors.sku = 'El SKU es requerido';
+      newErrors.sku = t('products.skuRequired');
     }
     if (!formData.location.trim()) {
-      newErrors.location = 'La ubicación es requerida';
+      newErrors.location = t('products.locationRequired');
     }
     if (!formData.ubicacion.trim()) {
-      newErrors.ubicacion = 'La ubicación es requerida';
+      newErrors.ubicacion = t('products.locationRequired');
     }
     if (!formData.fechaVencimiento) {
-      newErrors.fechaVencimiento = 'La fecha de vencimiento es requerida';
+      newErrors.fechaVencimiento = t('products.expirationDateRequired');
     }
 
     setErrors(newErrors);
@@ -110,8 +112,8 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
       const createdProduct = await productsApi.createProduct(newProduct);
 
       toast({
-        title: 'Éxito',
-        description: 'Producto creado correctamente',
+        title: t('common.success'),
+        description: t('products.createSuccess'),
         status: 'success',
         duration: 3000,
       });
@@ -122,9 +124,9 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
 
       // Reset form and close modal
       setFormData({
-        name: 'Producto 1',
+        name: t('products.defaultProductName'),
         sku: '',
-        location: 'Bodega 1',
+        location: t('products.defaultLocation'),
         ubicacion: '',
         stock: '',
         fechaVencimiento: '',
@@ -133,8 +135,8 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
       onClose();
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Error al crear el producto',
+        title: t('common.error'),
+        description: t('products.createError'),
         status: 'error',
         duration: 3000,
       });
@@ -145,9 +147,9 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
 
   const handleClose = () => {
     setFormData({
-      name: 'Producto 1',
+      name: t('products.defaultProductName'),
       sku: '',
-      location: 'Bodega 1',
+      location: t('products.defaultLocation'),
       ubicacion: '',
       stock: '',
       fechaVencimiento: '',
@@ -168,7 +170,7 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
           borderColor="gray.200"
           pb={4}
         >
-          Carga Individual de Productos
+          {t('products.individualUpload')}
         </ModalHeader>
         <ModalBody py={6}>
           <VStack spacing={6}>
@@ -182,12 +184,12 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
                     color="gray.700"
                     mb={2}
                   >
-                    Nombre *
+                    {t('products.name')} *
                   </FormLabel>
                   <Input
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
-                    placeholder="Nombre del producto"
+                    placeholder={t('products.productNamePlaceholder')}
                     size="md"
                     borderRadius="md"
                     borderColor="gray.300"
@@ -206,7 +208,7 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
                     color="gray.700"
                     mb={2}
                   >
-                    Location *
+                    {t('products.location')} *
                   </FormLabel>
                   <Select
                     value={formData.location}
@@ -219,10 +221,10 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
                       boxShadow: '0 0 0 1px #0078D4',
                     }}
                   >
-                    <option value="Bodega 1">Bodega 1</option>
-                    <option value="Bodega 2">Bodega 2</option>
-                    <option value="Bodega 3">Bodega 3</option>
-                    <option value="Almacén Central">Almacén Central</option>
+                    <option value={t('products.warehouse1')}>{t('products.warehouse1')}</option>
+                    <option value={t('products.warehouse2')}>{t('products.warehouse2')}</option>
+                    <option value={t('products.warehouse3')}>{t('products.warehouse3')}</option>
+                    <option value={t('products.centralWarehouse')}>{t('products.centralWarehouse')}</option>
                   </Select>
                   <FormErrorMessage fontSize="xs">{errors.location}</FormErrorMessage>
                 </FormControl>
@@ -234,13 +236,13 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
                     color="gray.700"
                     mb={2}
                   >
-                    Stock
+                    {t('products.stock')}
                   </FormLabel>
                   <Input
                     type="number"
                     value={formData.stock}
                     onChange={(e) => handleInputChange('stock', e.target.value)}
-                    placeholder="Cantidad en stock"
+                    placeholder={t('products.stockPlaceholder')}
                     size="md"
                     borderRadius="md"
                     borderColor="gray.300"
@@ -261,12 +263,12 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
                     color="gray.700"
                     mb={2}
                   >
-                    SKU *
+                    {t('products.sku')} *
                   </FormLabel>
                   <Input
                     value={formData.sku}
                     onChange={(e) => handleInputChange('sku', e.target.value)}
-                    placeholder="Código SKU"
+                    placeholder={t('products.skuPlaceholder')}
                     size="md"
                     borderRadius="md"
                     borderColor="gray.300"
@@ -285,12 +287,12 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
                     color="gray.700"
                     mb={2}
                   >
-                    Ubicación *
+                    {t('products.specificLocation')} *
                   </FormLabel>
                   <Input
                     value={formData.ubicacion}
                     onChange={(e) => handleInputChange('ubicacion', e.target.value)}
-                    placeholder="Ubicación específica"
+                    placeholder={t('products.specificLocationPlaceholder')}
                     size="md"
                     borderRadius="md"
                     borderColor="gray.300"
@@ -309,7 +311,7 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
                     color="gray.700"
                     mb={2}
                   >
-                    Fecha de Vencimiento *
+                    {t('products.expirationDate')} *
                   </FormLabel>
                   <Input
                     type="date"
@@ -348,7 +350,7 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
               borderColor: 'gray.400',
             }}
           >
-            CANCELAR
+            {t('common.cancel').toUpperCase()}
           </Button>
           <Button
             colorScheme="blue"
@@ -361,7 +363,7 @@ const ProductCreateModal = ({ isOpen, onClose, onProductCreated }: ProductCreate
               bg: '#006CBD',
             }}
           >
-            ACEPTAR
+            {t('common.accept').toUpperCase()}
           </Button>
         </ModalFooter>
       </ModalContent>

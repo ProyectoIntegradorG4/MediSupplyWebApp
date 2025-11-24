@@ -27,11 +27,13 @@ import { SearchIcon, ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons'
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import FileUploadModal from '../components/FileUploadModal';
 import ProductCreateModal from '../components/ProductCreateModal';
 import { productsApi } from '../services/api';
 
 const Products = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
@@ -74,7 +76,7 @@ const Products = () => {
   return (
     <Container maxW="container.xl" py={8}>
       <Box mb={8}>
-        <Heading size="lg" mb={6}>Proveedores y Productos</Heading>
+        <Heading size="lg" mb={6}>{t('products.title')}</Heading>
         <Tabs position="relative" variant="unstyled" mb={6} defaultIndex={1}>
           <TabList>
             <Tab
@@ -82,11 +84,11 @@ const Products = () => {
               onClick={() => navigate('/providers')}
             >
               <Box as="span" mr={2}>★</Box>
-              PROVEEDORES
+              {t('nav.providers').toUpperCase()}
             </Tab>
             <Tab _selected={{ color: 'blue.500', fontWeight: 'bold' }}>
               <Box as="span" mr={2}>☆</Box>
-              PRODUCTOS
+              {t('nav.products').toUpperCase()}
             </Tab>
           </TabList>
           <TabIndicator
@@ -104,7 +106,7 @@ const Products = () => {
                   <SearchIcon color="gray.300" />
                 </InputLeftElement>
                 <Input
-                  placeholder="SKU"
+                  placeholder={t('products.sku')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -116,7 +118,7 @@ const Products = () => {
                   <SearchIcon color="gray.300" />
                 </InputLeftElement>
                 <Input
-                  placeholder="Location"
+                  placeholder={t('products.location')}
                   value={locationFilter}
                   onChange={(e) => setLocationFilter(e.target.value)}
                 />
@@ -131,10 +133,10 @@ const Products = () => {
               }}
               bg={isCreateModalOpen ? 'red.100' : 'white'}
             >
-              CARGA INDIVIDUAL {isCreateModalOpen ? '(OPEN)' : ''}
+              {t('products.createProduct').toUpperCase()}
             </Button>
             <Button colorScheme="blue" onClick={() => setIsUploadModalOpen(true)}>
-              CARGA MASIVA
+              {t('products.uploadCsv').toUpperCase()}
             </Button>
           </HStack>
         </HStack>
@@ -143,6 +145,8 @@ const Products = () => {
           isOpen={isUploadModalOpen}
           onClose={() => setIsUploadModalOpen(false)}
           onUploadSuccess={handleUploadSuccess}
+          uploadFunction={productsApi.uploadProductsCsv}
+          entityType="products"
         />
         <ProductCreateModal 
           isOpen={isCreateModalOpen}

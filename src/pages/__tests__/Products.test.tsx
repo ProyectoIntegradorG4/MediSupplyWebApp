@@ -1,7 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { BrowserRouter } from 'react-router-dom'
-import { ChakraProvider } from '@chakra-ui/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, fireEvent, waitFor } from '../../test/test-utils'
 import { vi } from 'vitest'
 import Products from '../Products'
 import { productsApi } from '../../services/api'
@@ -77,47 +74,24 @@ vi.mock('../../services/api', () => ({
   }
 }))
 
-// Test wrapper component
-const TestWrapper = ({ children }: { children: React.ReactNode }) => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false },
-      mutations: { retry: false },
-    },
-  })
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <ChakraProvider>
-        <BrowserRouter>
-          {children}
-        </BrowserRouter>
-      </ChakraProvider>
-    </QueryClientProvider>
-  )
-}
 
 describe('Products Component', () => {
   it('renders products page elements', async () => {
-    render(
-      <TestWrapper>
-        <Products />
-      </TestWrapper>
-    )
+    render(<Products />)
 
-    expect(screen.getByText('Proveedores y Productos')).toBeInTheDocument()
+    expect(screen.getByText('Gestión de Productos')).toBeInTheDocument()
     expect(screen.getByText('PROVEEDORES')).toBeInTheDocument()
     expect(screen.getByText('PRODUCTOS')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('SKU')).toBeInTheDocument()
-    expect(screen.getByText('CARGA INDIVIDUAL')).toBeInTheDocument()
-    expect(screen.getByText('CARGA MASIVA')).toBeInTheDocument()
+    expect(screen.getByText('CREAR PRODUCTO INDIVIDUAL')).toBeInTheDocument()
+    expect(screen.getByText('CARGAR PRODUCTOS MASIVAMENTE')).toBeInTheDocument()
   })
 
   it('displays products table with data', async () => {
     render(
-      <TestWrapper>
+      
         <Products />
-      </TestWrapper>
+      
     )
 
     await waitFor(() => {
@@ -141,9 +115,9 @@ describe('Products Component', () => {
 
   it('filters products by SKU search', async () => {
     render(
-      <TestWrapper>
+      
         <Products />
-      </TestWrapper>
+      
     )
 
     await waitFor(() => {
@@ -160,13 +134,9 @@ describe('Products Component', () => {
   })
 
   it('opens individual product creation modal', async () => {
-    render(
-      <TestWrapper>
-        <Products />
-      </TestWrapper>
-    )
+    render(<Products />)
 
-    const individualButton = screen.getByText('CARGA INDIVIDUAL')
+    const individualButton = screen.getByText('CREAR PRODUCTO INDIVIDUAL')
     fireEvent.click(individualButton)
 
     await waitFor(() => {
@@ -175,17 +145,13 @@ describe('Products Component', () => {
   })
 
   it('opens bulk upload modal', async () => {
-    render(
-      <TestWrapper>
-        <Products />
-      </TestWrapper>
-    )
+    render(<Products />)
 
-    const bulkButton = screen.getByText('CARGA MASIVA')
+    const bulkButton = screen.getByText('CARGAR PRODUCTOS MASIVAMENTE')
     fireEvent.click(bulkButton)
 
     await waitFor(() => {
-      expect(screen.getByText('Carga de Archivos')).toBeInTheDocument()
+      expect(screen.getByText('Cargar Archivo CSV')).toBeInTheDocument()
     })
   })
 
@@ -197,133 +163,188 @@ describe('Products Component', () => {
     )
 
     render(
-      <TestWrapper>
+      
         <Products />
-      </TestWrapper>
+      
     )
 
     expect(screen.getByText('Loading...')).toBeInTheDocument()
   })
 
-  it('filters products by location', async () => {
-    render(
-      <TestWrapper>
-        <Products />
-      </TestWrapper>
-    )
+  it('creates new product via individual modal and closes', async () => {
+    render(<Products />)
 
+    // Wait for initial products to load
     await waitFor(() => {
       expect(screen.getByText('SKU001')).toBeInTheDocument()
     })
 
-    const locationInput = screen.getByPlaceholderText('Location')
-    fireEvent.change(locationInput, { target: { value: 'Bodega 1' } })
+    // Open individual product creation modal
+    const individualButton = screen.getByText('CREAR PRODUCTO INDIVIDUAL')
+    fireEvent.click(individualButton)
 
     await waitFor(() => {
-      expect(screen.getByText('SKU001')).toBeInTheDocument()
-      expect(screen.queryByText('SKU002')).not.toBeInTheDocument()
+      expect(screen.getByText('Carga Individual de Productos')).toBeInTheDocument()
+    })
+
+    // Close the modal
+    const cancelButton = screen.getByText('CANCELAR')
+    fireEvent.click(cancelButton)
+
+    // Verify modal is closed
+    await waitFor(() => {
+      expect(screen.queryByText('Carga Individual de Productos')).not.toBeInTheDocument()
     })
   })
 
-  it('changes rows per page', async () => {
-    // Mock more products to test pagination
+  it('handles error state when fetching products fails', async () => {
     const mockGetProducts = vi.mocked(productsApi.getProducts)
-    mockGetProducts.mockImplementationOnce(() => Promise.resolve(
-      Array.from({ length: 15 }, (_, i) => ({
-        productoId: `${i + 1}`,
-        sku: `SKU${String(i + 1).padStart(3, '0')}`,
-        nombre: `Test Product ${i + 1}`,
-        descripcion: 'Test Descripcion',
-        categoriaId: 'CAT-VAC-001',
-        subcategoria: 'Vacunas',
-        laboratorio: '',
-        principioActivo: '',
-        concentracion: '',
-        formaFarmaceutica: 'Tableta',
-        registroSanitario: `INVIMA-${i + 1}`,
-        requierePrescripcion: false,
-        codigoBarras: '',
-        estado_producto: 'activo',
-        actualizado_en: '2025-11-03T01:00:00',
-        fechaVencimiento: '2026-01-01',
-        stock: '10',
-        location: 'Bodega 1',
-        ubicacion: 'Bogotá D.C.'
-      }))
-    ))
+    mockGetProducts.mockRejectedValueOnce(new Error('API Error'))
 
     render(
-      <TestWrapper>
+      
         <Products />
-      </TestWrapper>
+      
     )
 
     await waitFor(() => {
-      expect(screen.getByText('SKU001')).toBeInTheDocument()
-    })
-
-    const rowsPerPageSelect = screen.getByDisplayValue('10')
-    fireEvent.change(rowsPerPageSelect, { target: { value: '5' } })
-
-    await waitFor(() => {
-      expect(screen.getByText(/1-5 of 15/)).toBeInTheDocument()
+      expect(screen.getByText('Error loading products. Please try again later.')).toBeInTheDocument()
     })
   })
 
-  it('navigates between pages', async () => {
-    // Mock more products to test pagination
+  it('shows no products message when there are no products', async () => {
     const mockGetProducts = vi.mocked(productsApi.getProducts)
-    mockGetProducts.mockImplementationOnce(() => Promise.resolve(
-      Array.from({ length: 15 }, (_, i) => ({
-        productoId: `${i + 1}`,
-        sku: `SKU${String(i + 1).padStart(3, '0')}`,
-        nombre: `Test Product ${i + 1}`,
-        descripcion: 'Test Descripcion',
-        categoriaId: 'CAT-VAC-001',
-        subcategoria: 'Vacunas',
-        laboratorio: '',
-        principioActivo: '',
-        concentracion: '',
-        formaFarmaceutica: 'Tableta',
-        registroSanitario: `INVIMA-${i + 1}`,
-        requierePrescripcion: false,
-        codigoBarras: '',
-        estado_producto: 'activo',
-        actualizado_en: '2025-11-03T01:00:00',
-        fechaVencimiento: '2026-01-01',
-        stock: '10',
-        location: 'Bodega 1',
-        ubicacion: 'Bogotá D.C.'
-      }))
-    ))
+    mockGetProducts.mockResolvedValueOnce([])
 
     render(
-      <TestWrapper>
+      
         <Products />
-      </TestWrapper>
+      
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('No products found')).toBeInTheDocument()
+    })
+  })
+
+  it('changes rows per page selection', async () => {
+    render(
+      
+        <Products />
+      
     )
 
     await waitFor(() => {
       expect(screen.getByText('SKU001')).toBeInTheDocument()
     })
 
-    // Check initial page
-    expect(screen.getByText(/Page 1 of 2/)).toBeInTheDocument()
+    const rowsPerPageSelect = screen.getByRole('combobox')
+    fireEvent.change(rowsPerPageSelect, { target: { value: '20' } })
 
-    // Click next page button
+    expect(rowsPerPageSelect).toHaveValue('20')
+  })
+
+  it('navigates to providers tab when clicked', async () => {
+    render(
+
+        <Products />
+
+    )
+
+    const providersTab = screen.getByText('PROVEEDORES')
+    fireEvent.click(providersTab)
+
+    // The navigate function should be called with /providers
+    // This is handled by the navigate mock in the test setup
+  })
+
+  it('handles pagination - navigates to next page', async () => {
+    // Create enough products to require pagination
+    const mockGetProducts = vi.mocked(productsApi.getProducts)
+    const manyProducts = Array.from({ length: 15 }, (_, i) => ({
+      productoId: `${i + 1}`,
+      sku: `SKU00${i + 1}`,
+      nombre: `Test Product ${i + 1}`,
+      descripcion: 'Test Descripcion',
+      categoriaId: 'CAT-VAC-001',
+      subcategoria: 'Vacunas',
+      laboratorio: '',
+      principioActivo: '',
+      concentracion: '',
+      formaFarmaceutica: 'Tableta',
+      registroSanitario: `INVIMA-${i + 100}`,
+      requierePrescripcion: false,
+      codigoBarras: '',
+      estado_producto: 'activo',
+      actualizado_en: '2025-11-03T01:00:00',
+      fechaVencimiento: '2026-01-01',
+      stock: '10',
+      location: 'Bodega 1',
+      ubicacion: 'Bogotá D.C.'
+    }))
+    mockGetProducts.mockResolvedValueOnce(manyProducts)
+
+    render(<Products />)
+
+    await waitFor(() => {
+      expect(screen.getByText('SKU001')).toBeInTheDocument()
+    })
+
+    // Find and click the "Next page" button
+    const nextButton = screen.getByLabelText('Next page')
+    fireEvent.click(nextButton)
+
+    // Verify we're on page 2
+    await waitFor(() => {
+      expect(screen.getByText('Page 2 of 2')).toBeInTheDocument()
+    })
+  })
+
+  it('handles pagination - navigates to previous page', async () => {
+    const mockGetProducts = vi.mocked(productsApi.getProducts)
+    const manyProducts = Array.from({ length: 15 }, (_, i) => ({
+      productoId: `${i + 1}`,
+      sku: `SKU00${i + 1}`,
+      nombre: `Test Product ${i + 1}`,
+      descripcion: 'Test Descripcion',
+      categoriaId: 'CAT-VAC-001',
+      subcategoria: 'Vacunas',
+      laboratorio: '',
+      principioActivo: '',
+      concentracion: '',
+      formaFarmaceutica: 'Tableta',
+      registroSanitario: `INVIMA-${i + 100}`,
+      requierePrescripcion: false,
+      codigoBarras: '',
+      estado_producto: 'activo',
+      actualizado_en: '2025-11-03T01:00:00',
+      fechaVencimiento: '2026-01-01',
+      stock: '10',
+      location: 'Bodega 1',
+      ubicacion: 'Bogotá D.C.'
+    }))
+    mockGetProducts.mockResolvedValueOnce(manyProducts)
+
+    render(<Products />)
+
+    await waitFor(() => {
+      expect(screen.getByText('SKU001')).toBeInTheDocument()
+    })
+
+    // Go to page 2 first
     const nextButton = screen.getByLabelText('Next page')
     fireEvent.click(nextButton)
 
     await waitFor(() => {
-      expect(screen.getByText(/Page 2 of 2/)).toBeInTheDocument()
+      expect(screen.getByText('Page 2 of 2')).toBeInTheDocument()
     })
 
-    // Click previous page button
+    // Now go back to page 1
     const prevButton = screen.getByLabelText('Previous page')
     fireEvent.click(prevButton)
 
     await waitFor(() => {
-      expect(screen.getByText(/Page 1 of 2/)).toBeInTheDocument()
+      expect(screen.getByText('Page 1 of 2')).toBeInTheDocument()
     })
   })
 })

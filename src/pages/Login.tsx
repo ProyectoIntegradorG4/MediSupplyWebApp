@@ -1,8 +1,10 @@
 import { Box, Button, Container, FormControl, FormLabel, Input, VStack, Image, useColorModeValue, FormErrorMessage, useToast } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const Login = () => {
+  const { t } = useTranslation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -12,8 +14,8 @@ const Login = () => {
 
   const validateForm = () => {
     const newErrors = {
-      username: username.trim() === '' ? 'Username is required' : '',
-      password: password.trim() === '' ? 'Password is required' : ''
+      username: username.trim() === '' ? t('login.usernameRequired') : '',
+      password: password.trim() === '' ? t('login.passwordRequired') : ''
     };
     setErrors(newErrors);
     return !newErrors.username && !newErrors.password;
@@ -21,11 +23,11 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       toast({
-        title: 'Error',
-        description: 'Please fill in all required fields',
+        title: t('common.error'),
+        description: t('login.fillAllFields'),
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -34,26 +36,26 @@ const Login = () => {
     }
 
     setIsSubmitting(true);
-    
+
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       // Only navigate to products if login is successful
       // For now, we'll simulate a successful login
       navigate('/products');
-      
+
       toast({
-        title: 'Success',
-        description: 'Login successful',
+        title: t('common.success'),
+        description: t('login.loginSuccess'),
         status: 'success',
         duration: 3000,
         isClosable: true,
       });
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Login failed. Please try again.',
+        title: t('common.error'),
+        description: t('login.loginError'),
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -89,17 +91,17 @@ const Login = () => {
             <form onSubmit={handleSubmit}>
               <VStack spacing="6">
                 <FormControl id="username" isInvalid={!!errors.username}>
-                  <FormLabel>Label</FormLabel>
+                  <FormLabel>{t('login.username')}</FormLabel>
                   <Input
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Value"
+                    placeholder={t('login.username')}
                   />
                   <FormErrorMessage>{errors.username}</FormErrorMessage>
                 </FormControl>
                 <FormControl id="password" isInvalid={!!errors.password}>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>{t('login.password')}</FormLabel>
                   <Input
                     type="password"
                     value={password}
@@ -116,7 +118,7 @@ const Login = () => {
                   w="100%"
                   isLoading={isSubmitting}
                 >
-                  LOG IN
+                  {t('login.loginButton')}
                 </Button>
               </VStack>
             </form>

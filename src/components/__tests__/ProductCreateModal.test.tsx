@@ -1,6 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { ChakraProvider } from '@chakra-ui/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, fireEvent, waitFor } from '../../test/test-utils'
 import { vi } from 'vitest'
 import ProductCreateModal from '../ProductCreateModal'
 import { productsApi } from '../../services/api'
@@ -32,23 +30,6 @@ vi.mock('../../services/api', () => ({
   }
 }))
 
-// Test wrapper component
-const TestWrapper = ({ children }: { children: React.ReactNode }) => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false },
-      mutations: { retry: false },
-    },
-  })
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <ChakraProvider>
-        {children}
-      </ChakraProvider>
-    </QueryClientProvider>
-  )
-}
 
 describe('ProductCreateModal Component', () => {
   const defaultProps = {
@@ -62,35 +43,26 @@ describe('ProductCreateModal Component', () => {
   })
 
   it('renders modal when open', () => {
-    render(
-      <TestWrapper>
-        <ProductCreateModal {...defaultProps} />
-      </TestWrapper>
-    )
+    render(<ProductCreateModal {...defaultProps} />)
 
     expect(screen.getByText('Carga Individual de Productos')).toBeInTheDocument()
     expect(screen.getByText('Nombre *')).toBeInTheDocument()
     expect(screen.getByText('SKU *')).toBeInTheDocument()
-    expect(screen.getByText('Location *')).toBeInTheDocument()
-    expect(screen.getByText('Ubicación *')).toBeInTheDocument()
+    expect(screen.getAllByText('Ubicación *').length).toBeGreaterThan(0)
     expect(screen.getByText('Stock')).toBeInTheDocument()
   })
 
   it('does not render when closed', () => {
-    render(
-      <TestWrapper>
-        <ProductCreateModal {...defaultProps} isOpen={false} />
-      </TestWrapper>
-    )
+    render(<ProductCreateModal {...defaultProps} isOpen={false} />)
 
     expect(screen.queryByText('Carga Individual de Productos')).not.toBeInTheDocument()
   })
 
   it('shows validation errors for required fields', async () => {
     render(
-      <TestWrapper>
+      
         <ProductCreateModal {...defaultProps} />
-      </TestWrapper>
+      
     )
 
     // Clear required fields to trigger validation
@@ -117,9 +89,9 @@ describe('ProductCreateModal Component', () => {
     const mockCreateProduct = vi.mocked(productsApi.createProduct)
     
     render(
-      <TestWrapper>
+      
         <ProductCreateModal {...defaultProps} />
-      </TestWrapper>
+      
     )
 
     // Fill in the form
@@ -164,9 +136,9 @@ describe('ProductCreateModal Component', () => {
 
   it('closes modal when cancel is clicked', () => {
     render(
-      <TestWrapper>
+      
         <ProductCreateModal {...defaultProps} />
-      </TestWrapper>
+      
     )
 
     const cancelButton = screen.getByText('CANCELAR')
@@ -177,9 +149,9 @@ describe('ProductCreateModal Component', () => {
 
   it('resets form when modal is closed', () => {
     const { rerender } = render(
-      <TestWrapper>
+      
         <ProductCreateModal {...defaultProps} />
-      </TestWrapper>
+      
     )
 
     // Verify modal is open
@@ -187,9 +159,9 @@ describe('ProductCreateModal Component', () => {
 
     // Close modal
     rerender(
-      <TestWrapper>
+      
         <ProductCreateModal {...defaultProps} isOpen={false} />
-      </TestWrapper>
+      
     )
 
     // Modal should be closed (Chakra UI hides it but doesn't unmount)
