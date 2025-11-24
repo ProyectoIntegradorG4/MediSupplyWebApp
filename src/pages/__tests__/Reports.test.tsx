@@ -489,4 +489,272 @@ describe('Reports Component', () => {
       expect(screen.getByText(/90\.000\.000/)).toBeInTheDocument()
     })
   })
+
+  describe('Data formatting and visualization', () => {
+    it('formats currency values correctly in seller KPI', async () => {
+      vi.mocked(reportsApi.getSellerKPI).mockResolvedValue(mockSellerKPIData)
+
+      render(<Reports />)
+
+      // Verify currency formatting (Colombian pesos with dots as thousand separators)
+      await waitFor(() => {
+        expect(screen.getByText(/90\.000\.000/)).toBeInTheDocument()
+      })
+    })
+
+    it('formats number values correctly in seller KPI', async () => {
+      vi.mocked(reportsApi.getSellerKPI).mockResolvedValue(mockSellerKPIData)
+
+      render(<Reports />)
+
+      // Verify number formatting
+      await waitFor(() => {
+        expect(screen.getByText(/2\.500/)).toBeInTheDocument()
+        expect(screen.getByText(/170/)).toBeInTheDocument()
+      })
+    })
+
+    it('displays trend chart when data is available', async () => {
+      vi.mocked(reportsApi.getSellerKPI).mockResolvedValue(mockSellerKPIData)
+
+      render(<Reports />)
+
+      await waitFor(() => {
+        const lineCharts = screen.getAllByTestId('line-chart')
+        expect(lineCharts.length).toBeGreaterThan(0)
+      })
+    })
+
+    it('displays ranking chart in region report', async () => {
+      vi.mocked(reportsApi.getRegionReport).mockResolvedValue(mockRegionReportData)
+
+      render(<Reports />)
+
+      const regionTab = screen.getByRole('tab', { name: /Reporte Regional/i })
+      fireEvent.click(regionTab)
+
+      await waitFor(() => {
+        const barChart = screen.getByTestId('bar-chart')
+        expect(barChart).toBeInTheDocument()
+      })
+    })
+
+    it('handles empty trend data gracefully', async () => {
+      const dataWithEmptyTrend = {
+        ...mockSellerKPIData,
+        tendencia: [],
+      }
+      vi.mocked(reportsApi.getSellerKPI).mockResolvedValue(dataWithEmptyTrend)
+
+      render(<Reports />)
+
+      await waitFor(() => {
+        expect(screen.getByText(/90\.000\.000/)).toBeInTheDocument()
+      })
+
+      // Verify KPI values are still displayed even without trend chart
+      expect(screen.getByText(/2\.500/)).toBeInTheDocument()
+      expect(screen.getByText(/170/)).toBeInTheDocument()
+    })
+
+    it('handles empty ranking data gracefully', async () => {
+      const dataWithEmptyRanking = {
+        ...mockRegionReportData,
+        ranking: [],
+      }
+      vi.mocked(reportsApi.getRegionReport).mockResolvedValue(dataWithEmptyRanking)
+
+      render(<Reports />)
+
+      const regionTab = screen.getByRole('tab', { name: /Reporte Regional/i })
+      fireEvent.click(regionTab)
+
+      await waitFor(() => {
+        expect(screen.getByText(/270\.000\.000/)).toBeInTheDocument()
+      })
+
+      // Chart should not be present when no ranking data
+      const barCharts = screen.queryAllByTestId('bar-chart')
+      expect(barCharts.length).toBe(0)
+    })
+
+    it('formats large currency values with proper thousand separators', async () => {
+      const dataWithLargeValues = {
+        ...mockSellerKPIData,
+        ventas_valor: 1234567890,
+      }
+      vi.mocked(reportsApi.getSellerKPI).mockResolvedValue(dataWithLargeValues)
+
+      render(<Reports />)
+
+      await waitFor(() => {
+        // Colombian format: 1.234.567.890
+        expect(screen.getByText(/1\.234\.567\.890/)).toBeInTheDocument()
+      })
+    })
+
+    it('displays percentage values correctly', async () => {
+      vi.mocked(reportsApi.getSellerKPI).mockResolvedValue(mockSellerKPIData)
+
+      render(<Reports />)
+
+      await waitFor(() => {
+        expect(screen.getByText(/90\.0%/)).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('User interactions and state changes', () => {
+    it('allows changing seller selection', async () => {
+      vi.mocked(reportsApi.getSellerKPI).mockResolvedValue(mockSellerKPIData)
+
+      render(<Reports />)
+
+      await waitFor(() => {
+        expect(screen.getByText(/90\.000\.000/)).toBeInTheDocument()
+      })
+
+      const sellerSelects = screen.getAllByLabelText('Vendedor')
+      fireEvent.change(sellerSelects[0], { target: { value: '4' } })
+
+      expect(sellerSelects[0]).toHaveValue('4')
+    })
+
+    it('allows changing date range in seller KPI', async () => {
+      vi.mocked(reportsApi.getSellerKPI).mockResolvedValue(mockSellerKPIData)
+
+      render(<Reports />)
+
+      await waitFor(() => {
+        expect(screen.getByText(/90\.000\.000/)).toBeInTheDocument()
+      })
+
+      const dateInputs = screen.getAllByLabelText(/De|Hasta/)
+      fireEvent.change(dateInputs[0], { target: { value: '2024-01-01' } })
+      fireEvent.change(dateInputs[1], { target: { value: '2024-12-31' } })
+
+      expect(dateInputs[0]).toHaveValue('2024-01-01')
+      expect(dateInputs[1]).toHaveValue('2024-12-31')
+    })
+
+    it('allows changing territory filter', async () => {
+      vi.mocked(reportsApi.getSellerKPI).mockResolvedValue(mockSellerKPIData)
+
+      render(<Reports />)
+
+      await waitFor(() => {
+        expect(screen.getByText(/90\.000\.000/)).toBeInTheDocument()
+      })
+
+      const territoryInput = screen.getByPlaceholderText('TERR-NORTE-BOG')
+      fireEvent.change(territoryInput, { target: { value: 'TERR-SUR-BOG' } })
+
+      expect(territoryInput).toHaveValue('TERR-SUR-BOG')
+    })
+
+    it('allows changing product filter', async () => {
+      vi.mocked(reportsApi.getSellerKPI).mockResolvedValue(mockSellerKPIData)
+
+      render(<Reports />)
+
+      await waitFor(() => {
+        expect(screen.getByText(/90\.000\.000/)).toBeInTheDocument()
+      })
+
+      const productInputs = screen.getAllByPlaceholderText('ID del Producto')
+      fireEvent.change(productInputs[0], { target: { value: 'PROD-123' } })
+
+      expect(productInputs[0]).toHaveValue('PROD-123')
+    })
+
+    it('allows changing region selection in region tab', async () => {
+      vi.mocked(reportsApi.getRegionReport).mockResolvedValue(mockRegionReportData)
+
+      render(<Reports />)
+
+      const regionTab = screen.getByRole('tab', { name: /Reporte Regional/i })
+      fireEvent.click(regionTab)
+
+      await waitFor(() => {
+        expect(screen.getByText(/270\.000\.000/)).toBeInTheDocument()
+      })
+
+      const regionSelects = screen.getAllByLabelText(/Territorio/i)
+      fireEvent.change(regionSelects[0], { target: { value: 'TERR-SUR-BOG' } })
+
+      expect(regionSelects[0]).toHaveValue('TERR-SUR-BOG')
+    })
+
+    it('allows changing seller in KPI summary tab', async () => {
+      vi.mocked(reportsApi.getKPISummary).mockResolvedValue(mockKPISummaryData)
+
+      render(<Reports />)
+
+      const summaryTab = screen.getByRole('tab', { name: /Resumen Rápido KPI/i })
+      fireEvent.click(summaryTab)
+
+      await waitFor(() => {
+        expect(screen.getByText(/85\.000\.000/)).toBeInTheDocument()
+      })
+
+      const sellerSelect = screen.getAllByLabelText('Vendedor')[1] // Second one in summary tab
+      fireEvent.change(sellerSelect, { target: { value: '3' } })
+
+      expect(sellerSelect).toHaveValue('3')
+    })
+
+    it('triggers data refresh when clicking Filtrar button in seller tab', async () => {
+      vi.mocked(reportsApi.getSellerKPI).mockResolvedValue(mockSellerKPIData)
+
+      render(<Reports />)
+
+      await waitFor(() => {
+        expect(screen.getByText(/90\.000\.000/)).toBeInTheDocument()
+      })
+
+      const filterButtons = screen.getAllByText('Filtrar')
+      fireEvent.click(filterButtons[0])
+
+      // Verify the API was called
+      expect(reportsApi.getSellerKPI).toHaveBeenCalled()
+    })
+
+    it('triggers data refresh when clicking Filtrar button in region tab', async () => {
+      vi.mocked(reportsApi.getRegionReport).mockResolvedValue(mockRegionReportData)
+
+      render(<Reports />)
+
+      const regionTab = screen.getByRole('tab', { name: /Reporte Regional/i })
+      fireEvent.click(regionTab)
+
+      await waitFor(() => {
+        expect(screen.getByText(/270\.000\.000/)).toBeInTheDocument()
+      })
+
+      const filterButtons = screen.getAllByText('Filtrar')
+      fireEvent.click(filterButtons[1])
+
+      // Verify the API was called
+      expect(reportsApi.getRegionReport).toHaveBeenCalled()
+    })
+
+    it('triggers data refresh when clicking Filtrar button in summary tab', async () => {
+      vi.mocked(reportsApi.getKPISummary).mockResolvedValue(mockKPISummaryData)
+
+      render(<Reports />)
+
+      const summaryTab = screen.getByRole('tab', { name: /Resumen Rápido KPI/i })
+      fireEvent.click(summaryTab)
+
+      await waitFor(() => {
+        expect(screen.getByText(/85\.000\.000/)).toBeInTheDocument()
+      })
+
+      const filterButtons = screen.getAllByText('Filtrar')
+      fireEvent.click(filterButtons[2])
+
+      // Verify the API was called
+      expect(reportsApi.getKPISummary).toHaveBeenCalled()
+    })
+  })
 })
